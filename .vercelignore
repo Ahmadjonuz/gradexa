@@ -15,8 +15,8 @@ UPDATE-*.cjs
 INSTALL-*.cmd
 START-*.cmd
 CHECK-UZ.cmd
-tests
-supabase
+/tests/
+/supabase/
 GRADEXA-*.sql
 01-SUPABASE-KURSLAR.sql
 GRADEXA-*.txt

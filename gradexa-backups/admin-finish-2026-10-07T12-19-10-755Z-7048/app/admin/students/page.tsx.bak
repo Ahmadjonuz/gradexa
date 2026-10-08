@@ -1,6 +1,0 @@
-import type { Metadata } from "next";
-import { AdminStudents } from "@/features/workspace/admin-students";
-export const metadata: Metadata = { title: "Talabalar — Gradexa" };
-export default function Page() {
-  return <AdminStudents />;
-}
