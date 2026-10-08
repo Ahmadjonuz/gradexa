@@ -1,0 +1,374 @@
+"use client";
+import { useRef, useState } from "react";
+import Link from "next/link";
+import { Plus, Pencil, PlayCircle } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import { lessonSchema, type Lesson } from "./model";
+import { useWorkspace } from "./store";
+import { PageHeading, WorkspaceGate, Choice, CourseEmpty } from "./ui";
+import { saveLesson } from "@/features/lessons/use-lessons";
+import { LessonMigration } from "@/features/lessons/lesson-migration";
+import { duplicateLessonOrder, nextLessonOrder } from "./admin-tools";
+import { resultPage } from "./study-flow";
+import { useUnsavedChanges } from "@/hooks/use-unsaved-changes";
+
+export function AdminLessons() {
+  const w = useWorkspace();
+  const [query, setQuery] = useState("");
+  const [course, setCourse] = useState("all");
+  const [status, setStatus] = useState("all");
+  const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState<Lesson | null>(null);
+  const initialDraft = useRef("");
+  const pending = useRef(false);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const confirmDiscard = useUnsavedChanges(!!editing && JSON.stringify(editing) !== initialDraft.current);
+  function openEditor(lesson: Lesson) {
+    initialDraft.current = JSON.stringify(lesson);
+    setError("");
+    setEditing(lesson);
+  }
+  function closeEditor() {
+    if (!pending.current && confirmDiscard()) setEditing(null);
+  }
+  const list = w.data.lessons
+    .filter(
+      (item) =>
+        (course === "all" || item.courseId === course) &&
+        (status === "all" || item.published === (status === "published")) &&
+        `${item.title} ${item.module}`
+          .toLowerCase()
+          .includes(query.trim().toLowerCase()),
+    )
+    .sort(
+      (a, b) =>
+        a.courseId.localeCompare(b.courseId) ||
+        a.module.localeCompare(b.module) ||
+        a.order - b.order,
+    );
+  async function save() {
+    if (pending.current) return;
+    const result = lessonSchema.safeParse(editing);
+    if (!result.success) {
+      setError(
+        "Dars nomi kamida 3 belgi, matni 20 belgi bo‘lsin. Davomiylik va tartib musbat son bo‘lishi kerak; video HTTPS manzil bo‘lsin.",
+      );
+      return;
+    }
+    if (!w.courses.some((c) => c.id === result.data.courseId)) {
+      setError("Kursni tanlang.");
+      return;
+    }
+    if (duplicateLessonOrder(w.data.lessons, result.data)) {
+      setError("Bu kurs va modulda shu tartib raqamli dars bor. Boshqa tartib raqamini tanlang.");
+      return;
+    }
+    pending.current = true;
+    setSaving(true);
+    setError("");
+    try {
+      const saved = await saveLesson(
+        result.data,
+        result.data.updatedAt
+          ? { id: result.data.id, updatedAt: result.data.updatedAt }
+          : undefined,
+      );
+      if (!saved.ok) {
+        setError(saved.message);
+        return;
+      }
+      toast.success("Dars Supabase’da saqlandi.");
+      setEditing(null);
+    } catch {
+      setError("Saqlash tasdiqlanmadi. Internetni tekshiring va qayta urinib ko‘ring.");
+    } finally {
+      pending.current = false;
+      setSaving(false);
+    }
+  }
+  const pagination = resultPage(list, page);
+  return (
+    <WorkspaceGate workspace={w}>
+      <PageHeading
+        title="Darslar"
+        subtitle="Kurs modullari, dars matni va video havolalarini boshqaring."
+      >
+        <Button
+          disabled={!w.courses.length}
+          onClick={() => {
+            const courseId = course === "all" ? w.courses[0].id : course;
+            const order = nextLessonOrder(w.data.lessons, courseId, "Asosiy bilimlar");
+            openEditor({
+              id: crypto.randomUUID(),
+              courseId,
+              title: "",
+              module: order === null ? "" : "Asosiy bilimlar",
+              body: "",
+              videoUrl: "",
+              minutes: 10,
+              order: order ?? 1,
+              published: false,
+            });
+          }}
+        >
+          <Plus />
+          Yangi dars
+        </Button>
+      </PageHeading>
+      <LessonMigration lessons={w.data.lessons} />
+      <div className="lms-toolbar">
+        <Input
+          aria-label="Dars qidirish"
+          placeholder="Dars yoki modul nomi…"
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+        />
+        <Choice
+          label="Kurs"
+          value={course}
+          onChange={value => { setCourse(value); setPage(1); }}
+          items={[
+            { value: "all", label: "Barcha kurslar" },
+            ...w.courses.map((c) => ({ value: c.id, label: c.title })),
+          ]}
+        />
+        <Choice label="Holat" value={status} onChange={value => { setStatus(value); setPage(1); }} items={[{ value: "all", label: "Barcha holatlar" }, { value: "published", label: "Nashr qilingan" }, { value: "draft", label: "Qoralama" }]} />
+      </div>
+      {list.length ? (
+        <div className="panel lms-table">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Dars</TableHead>
+                <TableHead>Kurs / modul</TableHead>
+                <TableHead>Davomiylik</TableHead>
+                <TableHead>Holat</TableHead>
+                <TableHead>Amallar</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pagination.items.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <strong>
+                      {item.order}. {item.title}
+                    </strong>
+                  </TableCell>
+                  <TableCell>
+                    {w.courses.find((c) => c.id === item.courseId)?.title}
+                    <small>{item.module}</small>
+                  </TableCell>
+                  <TableCell>{item.minutes} daqiqa</TableCell>
+                  <TableCell>
+                    <span
+                      className={`course-status-badge ${item.published ? "status-published" : "status-draft"}`}
+                    >
+                      {item.published ? "Nashr qilingan" : "Qoralama"}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="row-actions">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`${item.title} tahrirlash`}
+                        onClick={() => {
+                          openEditor(item);
+                        }}
+                      >
+                        <Pencil />
+                      </Button>
+                      <Button asChild variant="ghost" size="icon">
+                        <Link
+                          href={`/admin/lessons/${item.id}`}
+                          aria-label={`${item.title} ko‘rish`}
+                        >
+                          <PlayCircle />
+                        </Link>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <nav className="flex flex-wrap items-center justify-between gap-3 p-4" aria-label="Darslar sahifalari">
+            <span className="text-sm text-muted-foreground">{pagination.first}–{pagination.last} / {list.length} dars</span>
+            <div className="flex items-center gap-3"><Button variant="outline" size="sm" disabled={pagination.page === 1} onClick={() => setPage(pagination.page - 1)}>Oldingi</Button><span aria-current="page">{pagination.page} / {pagination.pages}</span><Button variant="outline" size="sm" disabled={pagination.page === pagination.pages} onClick={() => setPage(pagination.page + 1)}>Keyingi</Button></div>
+          </nav>
+        </div>
+      ) : (
+        <CourseEmpty
+          title="Dars topilmadi"
+          description="Filtrni o‘zgartiring yoki yangi dars yarating."
+        />
+      )}
+      <Dialog
+        open={!!editing}
+        onOpenChange={(open) => {
+          if (!open) closeEditor();
+        }}
+      >
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Dars muharriri</DialogTitle>
+            <DialogDescription>
+              Matn oddiy ko‘rinishda saqlanadi. Video fayl yuklanmaydi, HTTPS
+              havola qo‘shiladi.
+            </DialogDescription>
+          </DialogHeader>
+          {editing && (
+            <form
+              className="course-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                save();
+              }}
+            >
+              <fieldset disabled={saving} className="contents" aria-busy={saving}>
+              <Choice
+                label="Kurs"
+                disabled={saving}
+                value={editing.courseId}
+                onChange={(v) => setEditing({ ...editing, courseId: v, order: editing.updatedAt ? editing.order : nextLessonOrder(w.data.lessons, v, editing.module) ?? editing.order })}
+                items={w.courses.map((c) => ({ value: c.id, label: c.title }))}
+              />
+              <label className="form-field">
+                Dars nomi
+                <Input
+                  required
+                  minLength={3}
+                  maxLength={120}
+                  value={editing.title}
+                  onChange={(e) =>
+                    setEditing({ ...editing, title: e.target.value })
+                  }
+                />
+              </label>
+              <div className="course-form-grid">
+                <label className="form-field">
+                  Modul
+                  <Input
+                    required
+                    maxLength={100}
+                    value={editing.module}
+                    onChange={(e) =>
+                      setEditing({ ...editing, module: e.target.value })
+                    }
+                  />
+                </label>
+                <label className="form-field">
+                  Modul ichidagi tartib
+                  <Input
+                    type="number"
+                    min={1}
+                    max={999}
+                    required
+                    value={editing.order}
+                    onChange={(e) =>
+                      setEditing({ ...editing, order: Number(e.target.value) })
+                    }
+                  />
+                </label>
+              </div>
+              <label className="form-field">
+                Dars matni
+                <Textarea
+                  rows={9}
+                  required
+                  minLength={20}
+                  maxLength={30000}
+                  value={editing.body}
+                  onChange={(e) =>
+                    setEditing({ ...editing, body: e.target.value })
+                  }
+                />
+              </label>
+              <div className="course-form-grid">
+                <label className="form-field">
+                  Video havolasi (ixtiyoriy)
+                  <Input
+                    type="url"
+                    placeholder="https://…"
+                    value={editing.videoUrl}
+                    onChange={(e) =>
+                      setEditing({ ...editing, videoUrl: e.target.value })
+                    }
+                  />
+                </label>
+                <label className="form-field">
+                  Davomiylik (daqiqa)
+                  <Input
+                    required
+                    type="number"
+                    min={1}
+                    max={600}
+                    value={editing.minutes}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        minutes: Number(e.target.value),
+                      })
+                    }
+                  />
+                </label>
+              </div>
+              <div className="toggle-row">
+                <label htmlFor="lesson-published">
+                  Studentlarga ko‘rsatish
+                </label>
+                <Switch
+                  disabled={saving}
+                  id="lesson-published"
+                  checked={editing.published}
+                  onCheckedChange={(v) =>
+                    setEditing({ ...editing, published: v })
+                  }
+                />
+              </div>
+              {error && (
+                <p role="alert" className="field-error">
+                  {error}
+                </p>
+              )}
+              <div className="form-actions">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={saving}
+                  onClick={closeEditor}
+                >
+                  Bekor qilish
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? "Saqlanmoqda…" : "Saqlash"}
+                </Button>
+              </div>
+              </fieldset>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+    </WorkspaceGate>
+  );
+}

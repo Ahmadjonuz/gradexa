@@ -1,0 +1,126 @@
+"use client";
+import { useId, type ReactNode } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CourseLoading, CourseEmpty } from "@/features/courses/course-shared";
+import { refreshCourses } from "@/features/courses/use-courses";
+import { refreshEnrollments } from "@/features/enrollments/use-enrollments";
+import { refreshLessons } from "@/features/lessons/use-lessons";
+import { refreshWorkspace, type Workspace } from "./store";
+import type { ChangeResult } from "./repository";
+export { CourseEmpty };
+export function WorkspaceGate({
+  workspace,
+  children,
+}: {
+  workspace: Workspace;
+  children: ReactNode;
+}) {
+  if (!workspace.ready) return <CourseLoading />;
+  if (workspace.error)
+    return (
+      <div className="storage-error" role="alert">
+        <p>{workspace.error}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            refreshCourses();
+            refreshEnrollments();
+            refreshLessons();
+            refreshWorkspace();
+          }}
+        >
+          Qayta urinish
+        </Button>
+      </div>
+    );
+  return <>{children}</>;
+}
+export function PageHeading({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children?: ReactNode;
+}) {
+  return (
+    <section className="module-heading">
+      <div>
+        <p className="eyebrow">GRADEXA WORKSPACE</p>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+      </div>
+      {children}
+    </section>
+  );
+}
+export function Choice({
+  label,
+  value,
+  onChange,
+  items,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  items: { value: string; label: string }[];
+}) {
+  const id = useId();
+  return (
+    <div className="form-field choice-field">
+      <label htmlFor={id}>{label}</label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger id={id} className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {items.map((item) => (
+            <SelectItem value={item.value} key={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+export function saved(result: ChangeResult) {
+  if (result.ok) {
+    toast.success("Supabase’da saqlandi.");
+    return true;
+  }
+  toast.error(result.message);
+  return false;
+}
+export function MetricRow({
+  items,
+}: {
+  items: { label: string; value: number | string }[];
+}) {
+  return (
+    <div className="lms-metrics">
+      {items.map((item) => (
+        <div className="panel" key={item.label}>
+          <span>{item.label}</span>
+          <strong>{item.value}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+export function DemoNotice() {
+  return (
+    <p className="local-notice">
+      O‘quv ma’lumotlari Supabase’da akkauntingizga bog‘langan holda saqlanadi.
+    </p>
+  );
+}

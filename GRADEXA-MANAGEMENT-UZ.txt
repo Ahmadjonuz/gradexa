@@ -1,0 +1,161 @@
+GRADEXA V2 — BOSHQARUV VA O‘CHIRISH YANGILANISHI
+2026-10-08
+
+BU PAKET NIMA?
+Mavjud Gradexa uchun yangilash. Yangi loyiha emas.
+STUDY-FLOW o‘rnatilgan versiya va undan keyingi ADMIN-FINISH versiya qo‘llanadi.
+ADMIN-FINISH tuzatishlari ham paket ichida: uni alohida o‘rnatmang.
+Uning eski qo‘llanmasidagi “SQL kerak emas” gapi faqat o‘sha eski paketga
+tegishli. HOZIRGI paket uchun quyidagi GRADEXA-DELETE-UPDATE.sql zarur.
+
+O‘RNATISH — WINDOWS CMD
+1. Ishlayotgan serverni Ctrl+C bilan to‘xtating.
+2. UPDATE-GRADEXA-MANAGEMENT.cjs ni gradexa ichiga, package.json yoniga qo‘ying.
+3. Shu papkada CMD orqali:
+   node UPDATE-GRADEXA-MANAGEMENT.cjs --check
+   Xatosiz bo‘lsa:
+   node UPDATE-GRADEXA-MANAGEMENT.cjs
+4. Endi gradexa ichida paydo bo‘lgan GRADEXA-DELETE-UPDATE.sql ni oching.
+   Faylning BARCHA matnini mavjud Supabase loyihangizning SQL Editor oynasiga
+   ko‘chirib, Run bosing. Yangi Supabase loyiha yaratmang. Eski SQL paketlarini
+   qayta ishlatmang. Bu fayl faqat yangi o‘chirish mexanizmini qo‘shadi.
+   SQL bajarilishining o‘zi hech qanday talaba, dars yoki natijani o‘chirmaydi.
+5. Quyidagilarni navbat bilan bajaring; xato bo‘lsa keyingisiga o‘tmang:
+   npm.cmd run typecheck
+   npm.cmd run test:next
+   npm.cmd run build:next
+6. Oldin ishlagan START-GRADEXA-BANK.cmd yoki START-GRADEXA.cmd bilan oching.
+   Proksi talab qilinmasa: npm.cmd run dev:next
+
+Yangi kutubxona qo‘shilmadi. Ishlayotgan loyihada npm install kerak emas.
+Mavjud taklif yuborishdagi server SUPABASE_SECRET_KEY sozlamasi ishlatiladi.
+Hech qanday maxfiy qiymatni chatga yubormang va NEXT_PUBLIC_ orqali ochmang.
+SQL oldingi workspace va invitations migratsiyalari o‘rnatilganini talab qiladi.
+
+YANGILAGICH HIMOYASI
+Avval barcha fayllar mosligini tekshiradi. Sizdagi fayl tekshirilgan
+versiyalardan farq qilsa, hech bir loyiha faylini almashtirmaydi.
+Bunday holatda xabardagi fayl nomlarini yuboring; tekshiruvni chetlab o‘tmang.
+.env, node_modules, proksi sozlamalari va maxfiy qiymatlar almashtirilmaydi.
+Yangilagich Supabase’ga ulanmaydi va SQLni avtomatik bajarmaydi.
+Manba fayllar zaxirasi: gradexa-backups/management-<sana-vaqt>.
+Fayllarni qaytarish uchun serverni to‘xtatib, aniq zaxira nomini qo‘llang:
+node UPDATE-GRADEXA-MANAGEMENT.cjs --restore gradexa-backups/management-<aniq-nom>
+Keyin build:next ni qayta bajaring.
+MUHIM: bu manba kodi zaxirasi. O‘chirilgan Auth hisobi yoki bazadagi
+ma’lumotlarni tiklamaydi. O‘chirish oynasida ko‘rsatilgan bog‘liq yozuvlar
+ham butunlay o‘chishi mumkin. Dastlab faqat sinov yozuvlarida tekshiring.
+
+QO‘SHILGAN VA TUZATILGAN AMALLAR
+
+Talabalar — /admin/students:
+- Har bir talabada o‘chirish tugmasi.
+- Tasdiqlashdan oldin Supabase’dan kursga yozilishlar, natijalar, dars
+  progressi/qaydlari va bog‘liq takliflar soni olinadi.
+- Talaba ismini aynan yozib tasdiqlash kerak.
+- Server Supabase Auth Admin API orqali login hisobini o‘chiradi; mavjud
+  tashqi kalitlar shu talabaning profil va bog‘liq yozuvlarini o‘chiradi.
+- Admin/owner hisoblarini bu amal bilan o‘chirib bo‘lmaydi.
+- Faqat faol admin/owner bajara oladi; brauzerdagi rolga ishonilmaydi.
+
+Darslar — /admin/lessons:
+- Darsni va aynan shu darsga bog‘langan progress/qaydlarni o‘chirish.
+- Bog‘liq yozuvlar soni oldindan ko‘rsatiladi; kurs statistikasi yangilanadi.
+- Bo‘sh qidiruv natijasida filtrlarni tozalash amali.
+
+Testlar — /admin/quizzes:
+- Natijalari hali yo‘q test va uning savollarini o‘chirish.
+- Natijasi bor test o‘chirilmaydi; uni qoralamaga o‘tkazish tavsiya qilinadi.
+  Shu yo‘l bilan talabalarning topshirgan test natijalari saqlanadi.
+
+Kurslar — /admin/courses va /admin/courses/[courseId]:
+- Jadval qatorida va kurs ichida o‘chirish; kartalar ko‘rinishida kursni oching.
+- Faqat bo‘sh, nashrdan olingan kursni butunlay o‘chirish mumkin.
+- Dars, test, yozilish yoki taklifga bog‘langan kursda tushunarli xabar chiqadi.
+  Bunday kurs uchun mavjud arxivlash holati saqlangan.
+
+Takliflar — /admin/students?status=invited:
+- Yuborilmagan, hisob yaratilmagan qoralamani o‘chirish.
+- Hisobga bog‘langan taklifda login hisobi ham o‘chishi aniq ko‘rsatiladi.
+- Yuborilayotgan yoki hisob yaratish natijasi noma’lum taklif o‘chirilmaydi:
+  avval yuborish holatini tiklash kerak.
+- Qabul qilingan taklif o‘rniga talabalar ro‘yxatidagi haqiqiy profil ishlatiladi.
+
+Vazifalar — /admin:
+- Vazifa nomini tahrirlash va vazifani o‘chirish.
+- Bo‘sh/noto‘g‘ri nomni saqlash va ikki marta yuborish bloklanadi.
+- Saqlash xatosida matn saqlanadi; eskirgan nusxa yangi yozuvni bosib ketmaydi.
+- Vazifa muharririni o‘zgarish bilan yopishda tasdiqlash.
+
+Formalar va interfeys:
+- Kurs yaratish/tahrirlashda saqlanmagan o‘zgarish bilan Bekor qilish,
+  Orqaga yoki modalni yopishda ogohlantirish; yozish paytida yopilishni bloklash.
+- Sahifani yangilash/yopishda saqlanmagan forma haqida ogohlantirish.
+  Bu barcha menyu havolalari va brauzer Back tugmasiga global to‘siq emas.
+- Barcha o‘chirishlarda yuklanish, xato, qayta tekshirish va yozilayotgan
+  holat; takroriy bosishdan himoya; serverdagi yozuv o‘zgarsa qayta tasdiqlash.
+- O‘chirgandan keyin tegishli ro‘yxatlar qayta yuklanadi. Aloqa bo‘lmasa
+  refresh xabari chiqishi mumkin; aloqa tiklangach sahifani yangilang.
+- Mavjud rang, komponent, sahifa va navigatsiya dizayni saqlandi.
+- Oldingi ADMIN-FINISH dagi qidiruv, filtrlar, dars sahifalash, loading/error
+  sahifalari va forma saqlash himoyalari ham kiritilgan.
+
+TARMOQ UZILSA — TALABA HISOBI
+Auth o‘chirish natijasi aniq bo‘lmasa muvaffaqiyat deb ko‘rsatilmaydi.
+Talaba vaqtincha paused bo‘ladi va yangi o‘quv yozuvlari qabul qilinmaydi.
+Ro‘yxatni yangilang. Talaba hali mavjud bo‘lsa, o‘chirish oynasini qayta oching.
+Oldingi so‘rov uchun besh daqiqalik kutish xabari chiqishi mumkin; so‘ng qayta
+tekshirib tasdiqlang. Oddiy status tahriri tugallanmagan o‘chirishni bekor qilmaydi.
+Auth aniq rad etsa va tiklash tasdiqlansa, avvalgi holat qaytariladi.
+Muammo saqlansa, Supabase Auth loglari va shu foydalanuvchiga tegishli Storage
+obyektlari borligini tekshirish kerak; ular avtomatik o‘chirilmaydi.
+
+ASOSIY FAYLLAR
+features/deletions/model.ts — turlar, validatsiya va yorliqlar.
+features/deletions/actions.ts — sessiyaga asoslangan server actionlar.
+features/deletions/service.ts — tekshiruv, Supabase RPC va Auth Admin amallari.
+features/deletions/delete-record-button.tsx — umumiy tasdiqlash oynasi.
+features/workspace/admin-students.tsx — talaba va taklif tugmalari.
+features/workspace/admin-lessons.tsx — dars tugmasi/bo‘sh filtr holati.
+features/workspace/admin-quizzes.tsx — test tugmasi.
+features/courses/courses-view.tsx va course-detail.tsx — kurs tugmalari.
+features/courses/course-form.tsx va course-create.tsx — forma yopilish himoyasi.
+features/dashboard/dashboard-view.tsx — vazifa tahrirlash/o‘chirish.
+supabase/migrations/202610070001_admin_deletions.sql — yangi migratsiya.
+GRADEXA-DELETE-UPDATE.sql — aynan o‘sha migratsiyaning qo‘lda Run uchun nusxasi.
+tests/deletions.test.mjs — server xatolari, ruxsat va Auth natijalari testlari.
+tests/deletions-database.integration.mjs — izolyatsiyalangan SQL sinovlari.
+tests/admin-render.test.mjs, study-render.test.mjs — render tekshiruvlari.
+tests/invitations-database.integration.mjs, workspace-database.integration.mjs
+— yangi migratsiya bilan eski taklif/o‘quv oqimini tekshirish.
+package.json — yangi test mavjud test:next ro‘yxatiga kiritilgan.
+ADMIN-FINISH dan qolgan fayllarning izohi GRADEXA-ADMIN-FINISH-UZ.txt ichida.
+
+DATABASE HISOBOTI
+Oldin: mavjud Supabase. Keyin: aynan shu Supabase, yangi tekshirilgan DELETElar.
+LocalStorage yakuniy ma’lumot manbasi qilib olinmadi.
+Jadvallar: profiles, lessons, lesson_progress, courses, enrollments, quizzes,
+quiz_questions, quiz_attempts, quick_tasks, student_invitation_drafts.
+profiles ga o‘chirish so‘rovi/avvalgi holat/boshlangan vaqt uchun 3 ustun qo‘shildi.
+Taklifning user_id tashqi kaliti o‘sha talaba bilan CASCADE o‘chishga moslandi.
+Rol tizimi almashtirilmadi. RLS o‘chirilmagan; tekshirilgan security-definer
+funksiyalar va server-only Auth API ishlatiladi. Oddiy foydalanuvchiga umumiy
+DELETE huquqi berilmagan. Login/callback/parol tiklash qayta yozilmadi.
+
+TEKSHIRUV VA QOLGAN SINOV
+Ishlab chiqish muhitida: 112 dastur testi, 33 izolyatsiyalangan SQL testi,
+TypeScript va production build. SQL sinovlari jonli Supabase’ga ulanmaydi.
+Yangilagich: ikkala qo‘llanadigan versiya, zaxira/qaytarish, qayta o‘rnatish,
+begona o‘zgarishlarni saqlash, uzilishda rollback va Windows CRLF tekshiriladi.
+Windows brauzeri, haqiqiy Auth deleteUser, jonli RLS va bank proksisidagi
+natijalar HALI TASDIQLANMAGAN. Ularni quyidagi qabul sinovi tasdiqlaydi.
+
+KEYINGI BITTA BOSQICH — WINDOWS QABUL SINOVI
+Faqat sinov uchun yaratilgan yozuvlardan foydalaning:
+1. Admin: sinov talaba, dars, natijasiz test, bo‘sh qoralama kurs va vazifa
+   yarating. Vazifani tahrirlang. Har birini oynadagi nom bilan tasdiqlab o‘chiring.
+2. Sahifani yangilang: o‘chirilgan yozuv qaytmasin. O‘chirilgan talaba kira olmasin.
+3. Natijali test va ma’lumotli kursda o‘chirish bloklanishini tekshiring.
+4. Mavjud boshqa student bilan kiring: kurs/dars ko‘rish va test topshirish ishlasin.
+Xato bo‘lsa, aynan terminal yoki brauzer xabarini yuboring; maxfiy qiymatlarsiz.
+Bu paket Vercel’ga joylashtirmaydi va jonli ma’lumotlarni o‘zi o‘chirmaydi.

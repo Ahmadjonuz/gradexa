@@ -1,0 +1,98 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { UserPlus, Users, UserCheck, Mail, PauseCircle, Search, Download, MoreHorizontal, Pencil, ArrowRight, ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
+import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { studentSchema, type Student } from "./model";
+import { useWorkspace, saveWorkspace, refreshWorkspace } from "./store";
+import { WorkspaceGate, Choice, CourseEmpty, saved } from "./ui";
+import { sendInvitationAction } from "@/features/invitations/actions";
+import { toast } from "sonner";
+import { AccountHeading } from "./account-ui";
+import { initials, formatDate } from "./account-utils";
+import { studentCompletion, studentsCsv } from "./learning-model";
+import { studentStatusFilter } from "./admin-tools";
+import "@/features/courses/learning-pages.css";
+
+const labels = { active: "Faol", invited: "Taklif", paused: "To‘xtatilgan" };
+const invitationLabels = { draft: "Qoralama", sending: "Yuborilmoqda", sent: "Taklif yuborilgan", failed: "Yuborish tasdiqlanmagan" };
+export function AdminStudents({ initialStatus }: { initialStatus?: string } = {}) {
+  const w = useWorkspace();
+  const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState(""), [status, setStatus] = useState(studentStatusFilter(initialStatus)), [course, setCourse] = useState("all");
+  const [editing, setEditing] = useState<Student | null>(null), [error, setError] = useState("");
+  const [page, setPage] = useState(1), [selected, setSelected] = useState<string[]>([]);
+  const list = w.data.students.filter(s => (status === "all" || s.status === status) && (course === "all" || s.courseIds.includes(course)) && (s.name + " " + s.email).toLowerCase().includes(query.trim().toLowerCase()));
+  const pages = Math.max(1, Math.ceil(list.length / 8)), currentPage = Math.min(page, pages);
+  const visible = list.slice((currentPage - 1) * 8, currentPage * 8);
+  const selectedVisible = visible.filter(s => selected.includes(s.id)).length;
+  const isNew = !!editing && !w.data.students.some(s => s.id === editing.id);
+  const locked = !!editing?.invitationState && editing.invitationState !== "draft";
+  function resetPage() { setPage(1); setSelected([]); }
+  function invite() {
+    setError("");
+    setEditing({ id: crypto.randomUUID(), name: "", email: "", bio: "", status: "invited", courseIds: [], invitation: true, invitationState: "draft", createdAt: new Date().toISOString() });
+  }
+  async function save() {
+    if (saving) return;
+    const parsed = studentSchema.safeParse(editing);
+    if (!parsed.success) { setError("Ism va to‘g‘ri email manzilini kiriting."); return; }
+    if (parsed.data.status === "invited" && !parsed.data.courseIds.length) { setError("Taklif uchun kamida bitta kurs tanlang."); return; }
+    setSaving(true);
+    const result = await saveWorkspace("student", parsed.data);
+    setSaving(false);
+    if (!result.ok) { setError(result.message); return; }
+    saved(result); setEditing(null);
+  }
+  async function send() {
+    if (saving || !editing) return;
+    setSaving(true); setError("");
+    try {
+      const result = await sendInvitationAction(editing);
+      await refreshWorkspace();
+      if (!result.ok) {
+        setError(result.message);
+        if (result.persisted) setEditing(null);
+        toast.error(result.message); return;
+      }
+      toast.success(result.message); setEditing(null);
+    } catch { setError("Ulanish uzildi. Ro‘yxatni yangilab taklif holatini tekshiring."); }
+    finally { setSaving(false); }
+  }
+  function exportList() {
+    const rows = selected.length ? list.filter(s => selected.includes(s.id)) : list;
+    const url = URL.createObjectURL(new Blob([studentsCsv(rows, w.courses, w.data)], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a"); a.href = url; a.download = "gradexa-talabalar.csv"; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  return <WorkspaceGate workspace={w}><div className="ga-page gc-page"><AccountHeading title="Talabalar" subtitle="O‘quvchilar, kursga yozilish va takliflarni boshqaring."><Button onClick={invite}><UserPlus size={18} />Talaba taklif qilish</Button></AccountHeading>
+    <div className="gc-student-stats">{[[Users, w.data.students.length, "Jami talabalar"], [UserCheck, w.data.students.filter(s => s.status === "active").length, "Faol talabalar"], [Mail, w.data.students.filter(s => s.status === "invited").length, "Kutilayotgan takliflar"], [PauseCircle, w.data.students.filter(s => s.status === "paused").length, "To‘xtatilgan"]].map(([Icon, count, label]) => { const StatIcon = Icon as typeof Users; return <div key={String(label)}><StatIcon /><div><strong>{String(count)}</strong><span>{String(label)}</span></div></div>; })}</div>
+    <Tabs value={status} onValueChange={v => { setStatus(v); resetPage(); }}><TabsList className="gc-tabs" aria-label="Talaba holati"><TabsTrigger value="all">Barchasi</TabsTrigger><TabsTrigger value="active">Faol</TabsTrigger><TabsTrigger value="invited">Takliflar</TabsTrigger><TabsTrigger value="paused">To‘xtatilgan</TabsTrigger></TabsList></Tabs>
+    <div className="gc-toolbar"><div className="gc-search"><Search size={18} /><Input placeholder="Ism yoki email bo‘yicha qidirish…" aria-label="Talabalarni qidirish" value={query} onChange={e => { setQuery(e.target.value); resetPage(); }} /></div><Choice label="Kurs" value={course} onChange={v => { setCourse(v); resetPage(); }} items={[{ value: "all", label: "Barcha kurslar" }, ...w.courses.map(c => ({ value: c.id, label: c.title }))]} /><Button variant="outline" disabled={!list.length} onClick={exportList}><Download size={17} />{selected.length ? selected.length + " tani eksport" : "Eksport"}</Button></div>
+    {status === "invited" && <p className="gc-alert mb-4"><strong>Takliflar email orqali yuboriladi.</strong> Talaba havolada parol o‘rnatgach faol bo‘ladi. Qoralama saqlash email yubormaydi. Xat kelmasa spam papkasi va email xizmati sozlamalarini tekshiring.</p>}
+    {list.length ? <><div className="ga-panel p-0 overflow-hidden"><Table className="gc-students-table"><TableHeader><TableRow><TableHead><Checkbox aria-label="Shu sahifadagi talabalarni tanlash" checked={selectedVisible === visible.length ? true : selectedVisible ? "indeterminate" : false} onCheckedChange={v => setSelected(previous => v ? [...new Set([...previous, ...visible.map(s => s.id)])] : previous.filter(id => !visible.some(s => s.id === id)))} /></TableHead><TableHead>Ism / email</TableHead><TableHead>Kurslar</TableHead><TableHead>Progress</TableHead><TableHead>Holat</TableHead><TableHead>{status === "invited" ? "Yuborilgan sana" : "Qo‘shilgan sana"}</TableHead><TableHead><span className="sr-only">Amallar</span></TableHead></TableRow></TableHeader>
+    <TableBody>{visible.map(s => <TableRow key={s.id} data-state={selected.includes(s.id) ? "selected" : undefined}><TableCell><Checkbox aria-label={s.name + " tanlash"} checked={selected.includes(s.id)} onCheckedChange={v => setSelected(previous => v ? [...new Set([...previous, s.id])] : previous.filter(id => id !== s.id))} /></TableCell><TableCell><div className="gc-student-person"><span className="gc-avatar">{initials(s.name)}</span><div><Link href={"/admin/students/" + s.id}>{s.name}</Link><small>{s.email}</small></div></div></TableCell><TableCell><div className="gc-course-badges">{w.courses.filter(c => s.courseIds.includes(c.id)).map(c => <span key={c.id}>{c.title}</span>)}{!s.courseIds.length && "—"}</div></TableCell><TableCell><div className="gc-inline-progress"><Progress value={studentCompletion(w.data, s).percent} aria-label={s.name + " progressi"} /><span>{studentCompletion(w.data, s).percent}%</span></div></TableCell><TableCell><span className={"gc-status " + s.status}>{s.invitation ? invitationLabels[s.invitationState ?? "draft"] : labels[s.status]}</span></TableCell><TableCell>{formatDate((status === "invited" ? s.invitationSentAt : s.createdAt) ?? "")}</TableCell><TableCell><DropdownMenu><DropdownMenuTrigger aria-label={s.name + " amallari"} className="p-2 rounded-md"><MoreHorizontal size={18} /></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem asChild><Link href={"/admin/students/" + s.id}><ArrowRight />Profilni ochish</Link></DropdownMenuItem><DropdownMenuItem onClick={() => { setEditing({ ...s, courseIds: [...s.courseIds] }); setError(""); }}><Pencil />Tahrirlash</DropdownMenuItem></DropdownMenuContent></DropdownMenu></TableCell></TableRow>)}</TableBody></Table></div><div className="gc-pagination"><span>{(currentPage - 1) * 8 + 1}–{Math.min(currentPage * 8, list.length)} / {list.length} talaba{selected.length > 0 && " · " + selected.length + " ta tanlangan"}</span><Pagination className="mx-0 w-auto" aria-label="Talabalar sahifalari"><PaginationContent><PaginationItem><Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)} aria-label="Oldingi sahifa"><ChevronLeft size={16} /></Button></PaginationItem><PaginationItem><span className="px-3" aria-current="page">{currentPage} / {pages}</span></PaginationItem><PaginationItem><Button variant="outline" size="sm" disabled={currentPage === pages} onClick={() => setPage(currentPage + 1)} aria-label="Keyingi sahifa"><ChevronRight size={16} /></Button></PaginationItem></PaginationContent></Pagination></div></> : <CourseEmpty title="Talaba topilmadi" description="Qidiruv yoki kurs filtrini o‘zgartiring."><Button variant="outline" onClick={() => { setQuery(""); setCourse("all"); setStatus("all"); resetPage(); }}>Filtrlarni tozalash</Button></CourseEmpty>}
+    {error && !editing && <p role="alert" className="field-error mt-4">{error}</p>}
+    <p className="ga-footnote">Ko‘rsatkichlar Supabase’dagi o‘quv profillaridan hisoblanadi. Sana eski yozuvda bo‘lmasa, “—” ko‘rsatiladi.</p>
+    <Sheet open={!!editing} onOpenChange={open => { if (!open && !saving) setEditing(null); }}><SheetContent className="gc-sheet"><SheetHeader><SheetTitle>{isNew ? "Talaba taklif qilish" : "Talaba ma’lumotlari"}</SheetTitle><SheetDescription>{isNew ? "Talaba ma’lumotlarini kiriting va kurslarni belgilang." : "O‘quv profili va biriktirilgan kurslarni yangilang."}</SheetDescription></SheetHeader>
+      {editing && <form onSubmit={e => { e.preventDefault(); editing.status === "invited" ? send() : save(); }}>
+        <label className="form-field">To‘liq ism<Input readOnly={locked || saving} autoFocus required minLength={2} maxLength={100} placeholder="Ism Familiya" value={editing.name} onChange={e => { setEditing({ ...editing, name: e.target.value }); setError(""); }} /></label>
+        <label className="form-field">Email<Input readOnly={locked || saving || (!isNew && !editing.invitation)} required type="email" maxLength={160} placeholder="student@example.com" value={editing.email} onChange={e => { setEditing({ ...editing, email: e.target.value }); setError(""); }} /></label>
+        <label className="form-field">Rol<Input readOnly value="Talaba" /></label>
+        {!isNew && !editing.invitation && <Choice label="Holat" disabled={saving} value={editing.status} onChange={v => setEditing({ ...editing, status: v as Student["status"] })} items={Object.entries(labels).filter(([key]) => editing.invitation ? key === "invited" : key !== "invited").map(([value, label]) => ({ value, label }))} />}
+        <fieldset disabled={locked || saving}><legend>Kursga biriktirish</legend>{w.courses.length ? w.courses.map(c => <label key={c.id}><Checkbox disabled={locked || saving} checked={editing.courseIds.includes(c.id)} onCheckedChange={v => setEditing({ ...editing, courseIds: v ? [...new Set([...editing.courseIds, c.id])] : editing.courseIds.filter(id => id !== c.id) })} /><span>{c.title}</span></label>) : <p>Avval kurs yarating.</p>}</fieldset>
+        {editing.status === "invited" && <p className="ga-footnote">Havola muddati Supabase Auth sozlamasiga bog‘liq. Qabul qilingach kurslarni talaba profilida o‘zgartirish mumkin.</p>}
+        <p className="gc-alert"><ShieldCheck size={19} className="mb-2" />{editing.status === "invited" ? "Taklif yuborish talaba hisobini yaratadi va tanlangan kurslarga bog‘laydi. Talaba o‘z parolini emaildagi havolada belgilaydi." : "Ism, holat va kursga biriktirish bazada yangilanadi. Email va rol bu formadan o‘zgarmaydi."}</p>
+        {error && <p role="alert" className="field-error mt-4">{error}</p>}<div className="form-actions flex-wrap"><Button type="button" variant="outline" disabled={saving} onClick={() => setEditing(null)}>Yopish</Button>{editing.status === "invited" && !locked && <Button type="button" variant="outline" disabled={saving} onClick={save}>Qoralama</Button>}<Button type="submit" disabled={saving}>{saving ? "Kutilmoqda…" : editing.status === "invited" ? locked ? "Qayta yuborish" : "Taklif yuborish" : "Saqlash"}</Button></div>
+      </form>}
+    </SheetContent></Sheet>
+  </div></WorkspaceGate>;
+}

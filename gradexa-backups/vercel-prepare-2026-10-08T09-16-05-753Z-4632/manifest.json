@@ -1,0 +1,26 @@
+{
+  "format": "gradexa-vercel-prepare-backup-v1",
+  "createdAt": "2026-10-08T09:16:05.760Z",
+  "files": [
+    {
+      "file": "vercel.json",
+      "before": null,
+      "after": "2e91fe5f400371c4b313a8e0c0325be654e4a174aeadcedf00dd001fc1136c3b"
+    },
+    {
+      "file": ".vercelignore",
+      "before": null,
+      "after": "095f155b284a6959aabe61af31fe7a12b165b98bed15d9eb2b470be4c6461d05"
+    },
+    {
+      "file": "VERCEL-GRADEXA-BANK.cmd",
+      "before": null,
+      "after": "b61c037c9fb2d4dcdb7a0709a5a52bd565d0df4c458416e25981fd49533bb2f8"
+    },
+    {
+      "file": "VERCEL-UZ.txt",
+      "before": null,
+      "after": "eaa37ca1b2188d93894467eb6e4d87255890759499ee66145fb7568b47c3f8e9"
+    }
+  ]
+}

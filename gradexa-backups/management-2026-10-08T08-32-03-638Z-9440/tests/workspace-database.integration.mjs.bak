@@ -1,0 +1,178 @@
+// Optional PostgreSQL integration suite. No production credentials required.
+// GRADEXA_PGLITE_PATH points to an isolated install of @electric-sql/pglite.
+import test, { after } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { createServer } from 'vite';
+import { createClient } from '@supabase/supabase-js';
+const pkg = process.env.GRADEXA_PGLITE_PATH;
+if (!pkg) throw new Error('Set GRADEXA_PGLITE_PATH to an isolated @electric-sql/pglite installation.');
+const { PGlite } = await import(pathToFileURL(pkg + '/dist/index.js').href);
+const { pgcrypto } = await import(pathToFileURL(pkg + '/dist/contrib/pgcrypto.js').href);
+const db = new PGlite({ extensions: { pgcrypto } });
+after(() => db.close());
+await db.exec(`create role anon; create role authenticated; create role service_role; create schema auth;
+create table auth.users(id uuid primary key, email text, raw_user_meta_data jsonb default '{}', invited_at timestamptz, email_confirmed_at timestamptz, encrypted_password text);
+create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+grant usage on schema public,auth to anon,authenticated;
+grant execute on function auth.uid() to anon,authenticated;`);
+const migrations = ['202609100001_gradexa_foundation.sql', '202609250001_courses_data_layer.sql', '202610020001_enrollments_data_layer.sql', '202610020002_lessons_data_layer.sql', '202610020003_workspace_data_layer.sql'];
+for (const file of migrations) {
+  if(process.env.GRADEXA_TEST_BUNDLE==='1' && file!==migrations[0]) continue;
+  await db.exec(await readFile(new URL('../supabase/migrations/'+file, import.meta.url), 'utf8'));
+}
+if(process.env.GRADEXA_TEST_BUNDLE==='1') await db.exec(await readFile(new URL('../GRADEXA-DATA-UPDATE.sql',import.meta.url),'utf8'));
+await db.exec(await readFile(new URL('../supabase/migrations/202610060001_student_invitations.sql',import.meta.url),'utf8'));
+const owner=randomUUID(), student=randomUUID(), other=randomUUID(), paused=randomUUID(), admin=randomUUID();
+for (const [id,name] of [[owner,'owner'],[student,'student'],[other,'other'],[paused,'paused'],[admin,'admin']]) {
+  await db.query('insert into auth.users(id,email) values($1,$2)',[id,name+'@example.test']);
+}
+await db.query("update public.profiles set role='owner' where id=$1",[owner]);
+await db.query("update public.profiles set role='admin' where id=$1",[admin]);
+await db.query("update public.profiles set status='paused' where id=$1",[paused]);
+const course=randomUUID();
+await db.query("insert into public.courses(id,slug,title,description,category,level,status,sequential) values($1,'real-course','Real course','A real testing course description','Coding','beginner','published',true)",[course]);
+for(const id of [student,other]) await db.query("insert into enrollments(student_id,course_id) values($1,$2)",[id,course]);
+for(const [external,position] of [['lesson-a',1],['lesson-b',2]]) await db.query("insert into public.lessons(course_id,external_id,title,module_title,body,duration_minutes,position,is_published) values($1,$2,'A valid lesson','Main','A full lesson body that can be displayed.',10,$3,true)",[course,external,position]);
+async function asActor(actor,fn,role='authenticated') {
+  await db.exec(`set role ${role}`);
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[actor ?? '']);
+  try { return await fn(); } finally { await db.exec('reset role'); }
+}
+async function read(actor,kind,offset=0) { return asActor(actor,async()=> (await db.query('select public.gradexa_workspace_read($1,$2) value',[kind,offset])).rows[0].value); }
+async function write(actor,kind,value) { return asActor(actor,async()=> (await db.query('select public.gradexa_workspace_write($1,$2::jsonb) value',[kind,JSON.stringify(value)])).rows[0].value); }
+const authored={id:'quiz-test',courseId:'real-course',title:'Weighted quiz',passScore:60,maxAttempts:2,published:true,questions:[
+  {id:'q1',text:'First valid question?',options:['one','two','three','four'],correct:0,points:3,explanation:'First answer'},
+  {id:'q2',text:'Second valid question?',options:['one','two','three','four'],correct:1,points:1,explanation:'Second answer'},
+]};
+
+test('migrations repeat safely; existing rows and policies remain',async()=>{
+  await db.exec(await readFile(new URL(process.env.GRADEXA_TEST_BUNDLE==='1'?'../GRADEXA-DATA-UPDATE.sql':'../supabase/migrations/202610020003_workspace_data_layer.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/migrations/202610060001_student_invitations.sql',import.meta.url),'utf8'));
+  assert.equal((await db.query('select count(*)::int n from public.profiles')).rows[0].n,5);
+  assert.equal((await read(owner,'students')).length,3);
+});
+test('student, paused and anonymous requests cannot mutate staff data',async()=>{
+  await assert.rejects(write(student,'quiz',authored),/Administrator/);
+  await assert.rejects(write(paused,'quiz',authored),/Faol akkaunt/);
+  await assert.rejects(asActor(null,()=>db.query("select public.gradexa_workspace_read('students',0)"),'anon'),/permission denied/);
+});
+test('quiz writes are transactional and answer keys are staff only',async()=>{
+  await write(owner,'quiz',authored);
+  const view=(await read(student,'quizzes'))[0];
+  assert.equal(view.questions[0].correct,undefined);
+  assert.equal(view.questions[0].explanation,undefined);
+  assert.equal((await asActor(student,()=>db.query('select * from public.quiz_questions'))).rows.length,0);
+  const edit=(await read(owner,'quizzes'))[0];
+  const bad={...edit,title:'Do not save',questions:[{...edit.questions[0],options:['only one']}]};
+  await assert.rejects(write(owner,'quiz',bad),/to‘rtta javob/);
+  assert.equal((await read(owner,'quizzes'))[0].title,authored.title);
+  await write(owner,'quiz',{...edit,title:'Changed quiz'});
+  await assert.rejects(write(owner,'quiz',edit),/boshqa oynada/);
+  assert.equal((await write(owner,'quiz-import',authored)).skipped,true);
+});
+test('server grading, answer snapshots, idempotency and attempt limits',async()=>{
+  const quiz=(await read(student,'quizzes'))[0];
+  const request={quizId:quiz.id,revision:quiz.revision,requestId:randomUUID(),answers:[0,0],score:100,studentId:other};
+  const result=await write(student,'submit',request);
+  const rows=await read(student,'attempts');
+  assert.equal(rows[0].score,75); assert.equal(rows[0].studentId,student);
+  assert.equal(rows[0].questions[0].correct,0);
+  assert.equal((await write(student,'submit',request)).id,result.id);
+  await assert.rejects(write(student,'submit',{...request,answers:[1,1]}),/boshqa javoblar/);
+  assert.equal((await read(other,'attempts')).length,0);
+  await write(student,'submit',{...request,requestId:randomUUID(),answers:[0,1]});
+  await assert.rejects(write(student,'submit',{...request,requestId:randomUUID()}),/Urinishlar tugagan/);
+  await assert.rejects(asActor(student,()=>db.query('update public.quiz_attempts set score=100')),/permission denied/);
+});
+test('changed quizzes, bad answers, unenrollment and archived courses reject submission',async()=>{
+  const quiz=(await read(owner,'quizzes'))[0];
+  const base={quizId:quiz.id,revision:quiz.revision,requestId:randomUUID(),answers:[-1,1]};
+  await assert.rejects(write(other,'submit',base),/Javob raqami/);
+  await write(owner,'quiz',{...quiz,passScore:80});
+  await assert.rejects(write(other,'submit',{...base,answers:[0,1]}),/Test yangilangan/);
+  const current=(await read(owner,'quizzes'))[0];
+  await db.query("update courses set status='archived' where id=$1",[course]);
+  await assert.rejects(write(other,'submit',{...base,revision:current.revision,answers:[0,1]}),/kurs topilmadi/);
+  await db.query("update courses set status='published' where id=$1",[course]);
+  await db.query("update enrollments set status='paused' where student_id=$1",[other]);
+  await assert.rejects(write(other,'submit',{...base,revision:current.revision,answers:[0,1]}),/kursga yozilish/);
+  await db.query("update enrollments set status='active' where student_id=$1",[other]);
+  assert.equal((await read(student,'attempts'))[0].questions[0].text,authored.questions[0].text);
+});
+test('lesson progress enforces order and preserves notes/completion independently',async()=>{
+  await assert.rejects(write(student,'completion',{lessonId:'lesson-b',completed:true}),/Avvalgi darslarni/);
+  await write(student,'note',{lessonId:'lesson-a',note:'My note'});
+  await write(student,'completion',{lessonId:'lesson-a',completed:true});
+  await write(student,'completion',{lessonId:'lesson-b',completed:true});
+  const rows=await read(student,'progress');
+  assert.equal(rows.find(x=>x.lessonId==='lesson-a').note,'My note');
+  assert.equal(rows.filter(x=>x.completed).length,2);
+  assert.equal((await read(other,'progress')).length,0);
+  assert.equal((await read(owner,'progress')).find(x=>x.lessonId==='lesson-a').note,'');
+  await write(student,'note',{lessonId:'lesson-a',note:'Changed'});
+  assert.equal((await read(student,'progress')).filter(x=>x.completed).length,2);
+});
+test('profile editing cannot escalate role or alter another student',async()=>{
+  const own=(await read(student,'students'))[0];
+  await write(student,'profile',{...own,name:'New student name',language:'uz',avatar:'',id:owner,role:'owner',status:'paused'});
+  const p=(await db.query('select * from profiles where id=$1',[student])).rows[0];
+  assert.equal(p.role,'student'); assert.equal(p.status,'active'); assert.equal(p.full_name,'New student name');
+  await assert.rejects(write(student,'profile',{...own,language:'uz',avatar:''}),/Profil o‘zgargan/);
+});
+test('admin student edits persist enrollment without creating fake auth accounts',async()=>{
+  const target=(await read(owner,'students')).find(s=>s.id===other);
+  await write(owner,'student',{...target,name:'Updated student',status:'paused',courseIds:[]});
+  assert.equal((await db.query('select status from enrollments where student_id=$1',[other])).rows[0].status,'paused');
+  const draft={id:randomUUID(),name:'New invitation',email:'invite@example.test',bio:'',status:'invited',courseIds:['real-course']};
+  await write(owner,'student',draft);
+  assert.equal((await db.query('select count(*)::int n from auth.users')).rows[0].n,5);
+  assert.equal((await read(owner,'students')).find(s=>s.id===draft.id).invitation,true);
+  await assert.rejects(write(owner,'student',{...draft,id:randomUUID(),status:'active'}),/taklif qoralamasi/);
+});
+test('settings and quick tasks persist with stale edit protection',async()=>{
+  const initial=(await read(owner,'preferences'))[0];
+  const saved=await write(owner,'preferences',{...initial,weeklyGoal:7});
+  assert.ok(saved.updatedAt);
+  assert.equal((await read(student,'preferences'))[0].weeklyGoal,7);
+  await assert.rejects(write(owner,'preferences',initial),/Sozlamalar o‘zgargan/);
+  const task={id:randomUUID(),title:'Create the next lesson',completed:false};
+  await write(admin,'task',task);
+  const row=(await read(owner,'tasks'))[0];
+  await write(admin,'task',{...row,completed:true});
+  assert.equal((await read(owner,'tasks'))[0].completed,true);
+  assert.deepEqual(await read(student,'tasks'),[]);
+});
+test('paused sessions lose direct table access while auth can still read their profile',async()=>{
+  await db.query("update public.profiles set status='paused' where id=$1",[student]);
+  for(const table of ['lessons','enrollments','lesson_progress','quizzes','quiz_questions','quiz_attempts','workspace_settings']) {
+    assert.equal((await asActor(student,()=>db.query('select * from public.'+table))).rows.length,0,table);
+  }
+  assert.equal((await asActor(student,()=>db.query('select * from public.profiles'))).rows.length,1);
+  await assert.rejects(read(student,'attempts'),/Faol akkaunt/);
+  await db.query("update public.profiles set status='active' where id=$1",[student]);
+});
+test('real SQL responses pass application parsing for staff and student snapshots',async()=>{
+  const root=fileURLToPath(new URL('..',import.meta.url));
+  const vite=await createServer({appType:'custom',configFile:false,root,resolve:{alias:{'@':root}},server:{middlewareMode:true,ws:false}});
+  try {
+    const { createSupabaseWorkspaceRepository }=await vite.ssrLoadModule('/features/workspace/supabase-repository.ts');
+    for(const actor of [{id:owner,role:'owner',status:'active'},{id:student,role:'student',status:'active'}]) {
+      let queue=Promise.resolve();
+      const client=createClient('https://integration-test.invalid','public-test-key',{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:async(_url,options)=>{
+        const body=JSON.parse(options.body);
+        const operation=queue.then(()=>read(actor.id,body.p_kind,body.p_offset));
+        queue=operation.then(()=>{},()=>{});
+        return new Response(JSON.stringify(await operation),{status:200,headers:{'content-type':'application/json'}});
+      }}});
+      const result=await createSupabaseWorkspaceRepository(client,actor).read();
+      assert.equal(result.ok,true,JSON.stringify(result));
+      assert.equal(result.data.attempts.length,2);
+      assert.equal(result.data.quizzes[0].questions[0].correct,actor.role==='owner'?0:undefined);
+      assert.equal(result.data.preferences.weeklyGoal,7);
+    }
+  } finally { await vite.close(); }
+});

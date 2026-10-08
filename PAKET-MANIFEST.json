@@ -1,0 +1,1322 @@
+{
+  "package": "gradexa-v2-full-current-2026-10-06",
+  "created_at": "2026-10-06",
+  "framework": "Next.js 16.2.6",
+  "storage": "Supabase Auth and application data layer",
+  "verification": {
+    "typecheck": "pass",
+    "application_tests": "62/62 pass",
+    "production_build": "pass",
+    "postgres_integration_tests": "19/19 pass",
+    "windows_installer_config_check": "pass"
+  },
+  "excluded": [
+    "node_modules and build caches",
+    "all .env files except .env.example",
+    "Supabase records and browser localStorage",
+    "backups and temporary locks"
+  ],
+  "file_count_excluding_manifest": 260,
+  "files": [
+    {
+      "path": ".env.example",
+      "size": 284,
+      "sha256": "142a50ef73249e46e8248df217c8279d50e17f06e2e285012ad21b73506a9774"
+    },
+    {
+      "path": ".gitignore",
+      "size": 546,
+      "sha256": "6dd239613a514126dfb2e58bd6571cf95f0be65835ffc7e949481982474a184c"
+    },
+    {
+      "path": ".openai/hosting.json",
+      "size": 31,
+      "sha256": "d532abb65cf9ae20634b464d954cb4a08a0de9f3cd3cdf7f9c3ec8948826d947"
+    },
+    {
+      "path": "01-SUPABASE-KURSLAR.sql",
+      "size": 2500,
+      "sha256": "54abca79cabea0cd63dc36986b77088c1f661311b38bc36fecc752c4b6a680c7"
+    },
+    {
+      "path": "BOSHLASH-UZ.txt",
+      "size": 3612,
+      "sha256": "cab29e8f86267791289677cee4cf215fd555e3b00b2fe695f6ae44e2a394dfc4"
+    },
+    {
+      "path": "CHECK-UZ.cmd",
+      "size": 800,
+      "sha256": "8d9e11e64144b7e2f739a081b0bc70b0f516185b19c755415b8115460be92599"
+    },
+    {
+      "path": "GRADEXA-DATA-UPDATE-UZ.txt",
+      "size": 7777,
+      "sha256": "52b4a6f804c1274dbb9b062eed02201374f18479f5d910cfc47824542b29e9f2"
+    },
+    {
+      "path": "GRADEXA-DATA-UPDATE.sql",
+      "size": 33160,
+      "sha256": "ed6ddbcc931aaaba6a73ac35a1d224670540aad233e64f7b53726ac2a460b9a9"
+    },
+    {
+      "path": "GRADEXA-INVITATIONS-UPDATE.sql",
+      "size": 14562,
+      "sha256": "32c2021bf662d776dd1bc7ac4ddc2c2883919face22e82b91bb8fbb2b9d18088"
+    },
+    {
+      "path": "GRADEXA-INVITATIONS-UZ.txt",
+      "size": 7555,
+      "sha256": "6e415b42135fa22ffa7275790e1d78cd6bbdef208542cfa4b8395e3ab6b0ebaa"
+    },
+    {
+      "path": "GRADEXA-INVITE-EMAIL.html",
+      "size": 714,
+      "sha256": "9c3a272a7a87029208b7fc94beca578486a111ab06f6d9f4c339bb37ac8ac877"
+    },
+    {
+      "path": "INSTALL-GRADEXA-BANK.cmd",
+      "size": 845,
+      "sha256": "daefebf7e1a13f6f87cc306b424bb6f4aabda4e1656fa7c86bf53aef7ade792e"
+    },
+    {
+      "path": "INSTALL-UZ.cmd",
+      "size": 4017,
+      "sha256": "2aad92733606ff951ffa30d981b82e6cbff4eb0b30d24e8652f42c26147da98e"
+    },
+    {
+      "path": "PAKET-HOLATI.txt",
+      "size": 1974,
+      "sha256": "30f0fb3fe54b6796e9183b8de037b46ef024d18bf39f56e321094abcd3788f9c"
+    },
+    {
+      "path": "README.md",
+      "size": 3633,
+      "sha256": "5e0dc77608c3f326dc32cd952e16d75e9d13178ecedd763b78c7f5c42ce3e968"
+    },
+    {
+      "path": "START-GRADEXA-BANK.cmd",
+      "size": 817,
+      "sha256": "ac11e00bba77e90e4647785d6ea9324888defea7eb0509dcf4bca19d079f3af2"
+    },
+    {
+      "path": "START-GRADEXA.cmd",
+      "size": 923,
+      "sha256": "76a865a81553486888ed5ad28626b4372fea5a2d8c8365e7591369d6846948da"
+    },
+    {
+      "path": "app/accept-invitation/page.tsx",
+      "size": 1217,
+      "sha256": "11db58a6119db297023d3e98f8ceac35f6db613469da28517727e3eee19ff15d"
+    },
+    {
+      "path": "app/admin/analytics/page.tsx",
+      "size": 227,
+      "sha256": "26c9086fed938f40d10f8293243f227a3c75f175d68be8ccf5e621ce70e7a292"
+    },
+    {
+      "path": "app/admin/courses/[courseId]/page.tsx",
+      "size": 480,
+      "sha256": "e40c77e5a379a98a298afc5e32a5cfa6106d2779570c1dabd4edc90395b3f8a8"
+    },
+    {
+      "path": "app/admin/courses/new/page.tsx",
+      "size": 246,
+      "sha256": "c09445732797acbda7cddbae75cc0f3916cefb8f8560c46994e80b4b5f799b01"
+    },
+    {
+      "path": "app/admin/courses/page.tsx",
+      "size": 238,
+      "sha256": "997c2082f016db1e6a8145fc673bc3952f523e668749f7d73f7ef8f9946f58a5"
+    },
+    {
+      "path": "app/admin/layout.tsx",
+      "size": 367,
+      "sha256": "84dc6097dbec2af110939c64d724c29df7f4f9008a98e6ffa8883f6e33a52a77"
+    },
+    {
+      "path": "app/admin/lessons/[lessonId]/page.tsx",
+      "size": 257,
+      "sha256": "a726d8cfdf950d3eac27a07cce447e766c3be2e401bce47cfe29301cc4459fac"
+    },
+    {
+      "path": "app/admin/lessons/page.tsx",
+      "size": 235,
+      "sha256": "19df4fe867780a9d05ee649c25e30300f78900c3b4ef1f284684cc0a05d4011f"
+    },
+    {
+      "path": "app/admin/page.tsx",
+      "size": 138,
+      "sha256": "76185e865f40e48ae17a833962baf369a0065a173971e94d7bdb51489180c2d9"
+    },
+    {
+      "path": "app/admin/quiz-results/[attemptId]/page.tsx",
+      "size": 249,
+      "sha256": "b79eae285dca00ccb5934ec2863046bd95861bf65178fd0bec60322b780afabf"
+    },
+    {
+      "path": "app/admin/quiz-results/page.tsx",
+      "size": 356,
+      "sha256": "2bebc5f1bde46810bec75bffd1b89ff920b3f6c358809d05b19526961597feea"
+    },
+    {
+      "path": "app/admin/quizzes/[quizId]/page.tsx",
+      "size": 239,
+      "sha256": "faf19da10e7945e197eda6a3d42f11be8840870b4c35230ace6114f654928543"
+    },
+    {
+      "path": "app/admin/quizzes/new/page.tsx",
+      "size": 234,
+      "sha256": "e20dc1a3408be481ad272747c24461b83a8cdfb3a981cefe830d623325cb2230"
+    },
+    {
+      "path": "app/admin/quizzes/page.tsx",
+      "size": 235,
+      "sha256": "46b14be6dc08f78e8f583dafaece22e784f64e0a4539ee39b16c66186ad798b5"
+    },
+    {
+      "path": "app/admin/settings/page.tsx",
+      "size": 315,
+      "sha256": "19245e4071e5913a079e38f41d737f6563e997959e80f84d0a4e786f43dc64f4"
+    },
+    {
+      "path": "app/admin/students/[studentId]/page.tsx",
+      "size": 252,
+      "sha256": "0dff66c96f7dbfc6c05ca0ded66dbaf75be10164e5d0b589d54d263e5b4a825a"
+    },
+    {
+      "path": "app/admin/students/page.tsx",
+      "size": 240,
+      "sha256": "5c484653454ae6e404900ef512b21abe585503d3bbd94a4cafe5426db55576fb"
+    },
+    {
+      "path": "app/auth/callback/route.ts",
+      "size": 1487,
+      "sha256": "b277ed901135a46fb0ddd63d002bfed1b950f9e5d4eb9326ca94a80748ebdd9a"
+    },
+    {
+      "path": "app/chatgpt-auth.ts",
+      "size": 2404,
+      "sha256": "17a965f8948b21510cdf8ecbd70c5fdf58100e10970463f6a8fd2cc4795f8044"
+    },
+    {
+      "path": "app/courses.css",
+      "size": 7866,
+      "sha256": "c01072c19da79c772e1fc8761e2366c40145bd9af9410f4035c390389912e6c1"
+    },
+    {
+      "path": "app/forgot-password/actions.ts",
+      "size": 2069,
+      "sha256": "58befcd1333ae14d3c988a627095efada43690cbd3b349f6a4c55ce64d04faa0"
+    },
+    {
+      "path": "app/forgot-password/page.tsx",
+      "size": 623,
+      "sha256": "47285822f54642b086d8a817b1624a3f29a9091f40d52fba6ff952c8064aeb4a"
+    },
+    {
+      "path": "app/globals.css",
+      "size": 3932,
+      "sha256": "7309735858d7f11011ec588aa6046acb288e1be569d330bffd6ca68503446723"
+    },
+    {
+      "path": "app/gradexa.css",
+      "size": 12660,
+      "sha256": "fd68407f09eaec36762c13d99871ca0d82d89c7829844958e4bd90820b837a7d"
+    },
+    {
+      "path": "app/layout.tsx",
+      "size": 570,
+      "sha256": "ed877a578f29bbd6311bdc7c28cb4e3e153ddd8bb147f89736ea982e7858f3e1"
+    },
+    {
+      "path": "app/login/actions.ts",
+      "size": 2072,
+      "sha256": "3e1ca66d3d49c9e489cfa364056d7746339e66f1934ee8f1dcbcf8c2c3989a36"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "size": 526,
+      "sha256": "8b1aeebd0285ab983cb6f0edccf2e7c2fda50bbc2834f7ef2ca730811fc7e59e"
+    },
+    {
+      "path": "app/not-found.tsx",
+      "size": 132,
+      "sha256": "450329ed7abdc29d0db5b062df6081ae5cc3c62813807ec56beb4dc3c4560129"
+    },
+    {
+      "path": "app/page.tsx",
+      "size": 473,
+      "sha256": "e4884402be06a8557a1f0535a7f1934dbecd1f307f2c7abc23937f4008b9ebdc"
+    },
+    {
+      "path": "app/reset-password/actions.ts",
+      "size": 382,
+      "sha256": "a2ccc93984fd6bb1a4dce3456fb1692834b67a8195a7cf44395d0eddc3d527a0"
+    },
+    {
+      "path": "app/reset-password/page.tsx",
+      "size": 947,
+      "sha256": "164901ec2dca31c63e89ee93ee1603eca09fbd904cd0b5f87633240dd97d96af"
+    },
+    {
+      "path": "app/student/courses/[courseId]/page.tsx",
+      "size": 253,
+      "sha256": "86b7a1cd8c2f542246d5cdd6ed8fecd24276851afca8dfbb129f92c571ffa039"
+    },
+    {
+      "path": "app/student/courses/page.tsx",
+      "size": 248,
+      "sha256": "7879697d6cb892ed9f2e4256d29242d909c9824ad646b04037e5ba3111133e85"
+    },
+    {
+      "path": "app/student/layout.tsx",
+      "size": 493,
+      "sha256": "777b9a08f4112ed7be1da45a20d2e39cadb9ef1100bbcb2d8ba2ff1a0784943f"
+    },
+    {
+      "path": "app/student/lessons/[lessonId]/page.tsx",
+      "size": 251,
+      "sha256": "486e6da48457ef1a61147d614da74a8cf539474687e322dc35da587ed32a20f6"
+    },
+    {
+      "path": "app/student/page.tsx",
+      "size": 242,
+      "sha256": "709380970bef31541ca89ccaf34fe35e853aae3a03370dae75ca3a94102c7fbe"
+    },
+    {
+      "path": "app/student/profile/page.tsx",
+      "size": 332,
+      "sha256": "e1358bbeba0c6e344461afcc27f37960863fbb5f8faec6bda200ddfc9620b865"
+    },
+    {
+      "path": "app/student/quizzes/[quizId]/page.tsx",
+      "size": 241,
+      "sha256": "fce49c91d5990155293ec7022b0571efe48af94e2edd1184507b11c010f02b91"
+    },
+    {
+      "path": "app/student/quizzes/page.tsx",
+      "size": 241,
+      "sha256": "40f25c2027d43f11c45787f1cd8e79801c5f5d4113ab373ac9822fa91181bd3b"
+    },
+    {
+      "path": "app/student/results/[attemptId]/page.tsx",
+      "size": 257,
+      "sha256": "1d45f445215ecdd21cc48c1b9cd5fcad892255dde13293458ec6761e132b68b2"
+    },
+    {
+      "path": "app/student/results/page.tsx",
+      "size": 238,
+      "sha256": "ac8df4a0e27bd56c76ba2197828a5290711324e9fb2ae803bf5f726cd2b19429"
+    },
+    {
+      "path": "app/workspace.css",
+      "size": 26863,
+      "sha256": "685f40e887da60f49e1865c5105c27cec0f8de7c871453809e11d482b1faf212"
+    },
+    {
+      "path": "components/auth/logout-button.tsx",
+      "size": 403,
+      "sha256": "7c3ad6425fe918e4bcbac28b4dc50f22fb899474b33377830ad4249b7642c52a"
+    },
+    {
+      "path": "components/brand/gradexa-logo.tsx",
+      "size": 311,
+      "sha256": "f7e6735282cae3f1e3b41ea3e88584ec4bd9497959fc5e31f55115cb6c576713"
+    },
+    {
+      "path": "components/brand/gradexa-mark.tsx",
+      "size": 1630,
+      "sha256": "e2d9f4133958791519011a8a694f4fd44ea2f5746d553ebbf0d1b723cdc8718e"
+    },
+    {
+      "path": "components/layout/admin-shell.tsx",
+      "size": 8370,
+      "sha256": "f68dcb03f5dea1fd03af00a12d26ac75e5a6288f0d3ed0fc99320ffd86260d82"
+    },
+    {
+      "path": "components/layout/student-shell.tsx",
+      "size": 7418,
+      "sha256": "3541c303e501a7879fb2d67ab9802abb8fa9b7a2c5fa2cc46cde26371bd9d646"
+    },
+    {
+      "path": "components/ui/accordion.tsx",
+      "size": 2048,
+      "sha256": "a4f153089ba886dfcf73fac26b5c01ca933fa12fbe88df6fb723912bfffdfbb0"
+    },
+    {
+      "path": "components/ui/alert-dialog.tsx",
+      "size": 5439,
+      "sha256": "9a8d950f2b9b4352d5ebb762fb44d5c28c2d353aa29712071973656a8736e311"
+    },
+    {
+      "path": "components/ui/alert.tsx",
+      "size": 1614,
+      "sha256": "2cc59b5f7bda91c1670884b1bf46bfc8a2a6f226cef184f5762acc037188885b"
+    },
+    {
+      "path": "components/ui/aspect-ratio.tsx",
+      "size": 274,
+      "sha256": "b1c157886236782cb92d8fbcd4749532aaf6d8aabefd6e157ca40358f902f407"
+    },
+    {
+      "path": "components/ui/attachment.tsx",
+      "size": 6002,
+      "sha256": "ae8a25dd1a896d3964e3ef54d97e51221b418cde287dfd794428b89951c5c790"
+    },
+    {
+      "path": "components/ui/avatar.tsx",
+      "size": 2916,
+      "sha256": "58a846bf1617b94b9681921db9b8461d0145f311424663d11678a06b6153cb34"
+    },
+    {
+      "path": "components/ui/badge.tsx",
+      "size": 1776,
+      "sha256": "46a0de5224f6a5d5d63d45246534288518dce888f031064bff925bbc7fe6ad97"
+    },
+    {
+      "path": "components/ui/breadcrumb.tsx",
+      "size": 2350,
+      "sha256": "d4c0831bba2212e778248f54a6ace6ef378df8bba4616d1abf27787a31eabae5"
+    },
+    {
+      "path": "components/ui/bubble.tsx",
+      "size": 4699,
+      "sha256": "870cc0c5cfc8a515053f7e41e706a6bd017a909b45f1305fd3b164a52cc4483b"
+    },
+    {
+      "path": "components/ui/button-group.tsx",
+      "size": 2202,
+      "sha256": "784c89d8ee683e1bc972ae69e6ea8225a7f63abe22aa1b5fc3423ae8a2a399c0"
+    },
+    {
+      "path": "components/ui/button.tsx",
+      "size": 2392,
+      "sha256": "cc36af0f8b5019c33cc039fbf03bb952a513072b15b55b53c592b78af3e5f4c4"
+    },
+    {
+      "path": "components/ui/calendar.tsx",
+      "size": 7832,
+      "sha256": "3855fbe0d3f8ad3a4b93071f98b76a9f6782d46ec8b05f5d2ddbee1e4e39bc84"
+    },
+    {
+      "path": "components/ui/card.tsx",
+      "size": 1987,
+      "sha256": "c48dd3b96be90a7066f1aebf294f0af9d00ebcdc367d5d4aca55429ade570c1c"
+    },
+    {
+      "path": "components/ui/carousel.tsx",
+      "size": 5556,
+      "sha256": "b7ea0dda3903d972c186f739e23da61f547bc83b5a0bf13b16856577846d5fc3"
+    },
+    {
+      "path": "components/ui/chart.tsx",
+      "size": 10614,
+      "sha256": "45aa5ea4a386f4fb5b8869ff4bab3a08cf89255190ee322043baf84c3e950b6a"
+    },
+    {
+      "path": "components/ui/checkbox.tsx",
+      "size": 1214,
+      "sha256": "b23ab9d4deeedf2ac8f512c368361ede681aa383437ef48563a6f9b7dbe95f27"
+    },
+    {
+      "path": "components/ui/collapsible.tsx",
+      "size": 795,
+      "sha256": "c6598e5584f4258b5d9fefadbc5ad6a66888ad58729f4b634a0bb2d9c513188b"
+    },
+    {
+      "path": "components/ui/combobox.tsx",
+      "size": 9158,
+      "sha256": "2d68e78b2dc7e38a085f222dede60a80b4f8229a6e91732c484605e204d46735"
+    },
+    {
+      "path": "components/ui/command.tsx",
+      "size": 4818,
+      "sha256": "361193df1e3d64a9e9b5048f045264782fcb387aab3f00f2b805fdcbf538b16a"
+    },
+    {
+      "path": "components/ui/context-menu.tsx",
+      "size": 8268,
+      "sha256": "2cf1fcf59df0649a3e2a126d1df2f639145f6b6bf5689ee54af1f40ab1245017"
+    },
+    {
+      "path": "components/ui/dialog.tsx",
+      "size": 4303,
+      "sha256": "dce39c6adc47d997bd2567f8b7a72f466b0134715105cd42f9194007b8ecdb14"
+    },
+    {
+      "path": "components/ui/direction.tsx",
+      "size": 506,
+      "sha256": "84ae2ad658207f0e0f367978e5508cd8027cd00c29c41d3d13db21a708c3d1e6"
+    },
+    {
+      "path": "components/ui/drawer.tsx",
+      "size": 4255,
+      "sha256": "cb6eaf58eb0757ca91af284e5d925b89a42ad7eb19cb3f44c575a3487aa9350f"
+    },
+    {
+      "path": "components/ui/dropdown-menu.tsx",
+      "size": 8418,
+      "sha256": "98f0dcdae38225b73734aceeb9213dd751fea2c72ea520df31003cd133deac8a"
+    },
+    {
+      "path": "components/ui/empty.tsx",
+      "size": 2396,
+      "sha256": "ae95bdcf367a076ae02e7925f14522a148798f72d9651749c6d55497dba584c0"
+    },
+    {
+      "path": "components/ui/field.tsx",
+      "size": 6159,
+      "sha256": "ba67d76f017ac059fc86cf8c344e0b2991c4322d3619e125498c19b87f6eefbd"
+    },
+    {
+      "path": "components/ui/form.tsx",
+      "size": 3757,
+      "sha256": "315b46bb75ab7d1c6061b5d750aa4bedf6e7a455e15e2d7f9182f053d5972b1e"
+    },
+    {
+      "path": "components/ui/hover-card.tsx",
+      "size": 1526,
+      "sha256": "f5d8df42c59370ec14d61bcc54f7d68e9bb7dfa0d6a872b2f7cffc2aafbf23b8"
+    },
+    {
+      "path": "components/ui/input-group.tsx",
+      "size": 5065,
+      "sha256": "6afbd58fea4c438e6252dc4568bddc122e84ababead4ad5cee50ace01100c9a0"
+    },
+    {
+      "path": "components/ui/input-otp.tsx",
+      "size": 2254,
+      "sha256": "161946daa89f0eda2575b9271c0494e35807c4ffb55598a49f67160c17fec299"
+    },
+    {
+      "path": "components/ui/input.tsx",
+      "size": 962,
+      "sha256": "8c4612a7c41319ac5049daa3b34b080f9784b6245c17780eb87c127e58e473db"
+    },
+    {
+      "path": "components/ui/item.tsx",
+      "size": 4486,
+      "sha256": "6e2144d6d87142dbbe56d568810bf546318c8aa661447ebb0d76ebbf382cb45f"
+    },
+    {
+      "path": "components/ui/kbd.tsx",
+      "size": 862,
+      "sha256": "6088c3a5432338b1719c17e9b5d0e1fa74fd1f66060f248fc88909d33a82cd13"
+    },
+    {
+      "path": "components/ui/label.tsx",
+      "size": 606,
+      "sha256": "a476e41f08b9de5bd447de66a33d8bc2ad18f2fa6b96c064778bab4b6f439f4c"
+    },
+    {
+      "path": "components/ui/marker.tsx",
+      "size": 1864,
+      "sha256": "3d798763f094b2bb5e7ade2d5cd1b9bab498bc8ca7fd4cfaf4e5835bdedc34a0"
+    },
+    {
+      "path": "components/ui/menubar.tsx",
+      "size": 8389,
+      "sha256": "9243af8afcea03703398ccd1c2a8c0a87ad6cbaf2bd272fb609f5b79fe46aebb"
+    },
+    {
+      "path": "components/ui/message-scroller.tsx",
+      "size": 3992,
+      "sha256": "bb7660a248e4e9589c3816c7c1c199ea1381a70d2c8476ae895b567a7a4d86cf"
+    },
+    {
+      "path": "components/ui/message.tsx",
+      "size": 2232,
+      "sha256": "9d2952bf3b641081f09aa2739535e6bbd1be0a4946789752a2c20d8aaef43185"
+    },
+    {
+      "path": "components/ui/native-select.tsx",
+      "size": 1995,
+      "sha256": "007516b111fca8c98a6c40c94ab91bb68cc5b52afce1ed1f5e510c3d86e7347c"
+    },
+    {
+      "path": "components/ui/navigation-menu.tsx",
+      "size": 6658,
+      "sha256": "889d358a77de88e9cb6f39ea4895ea4c76eaf01d731b74e44f1c41e97a78a044"
+    },
+    {
+      "path": "components/ui/pagination.tsx",
+      "size": 2717,
+      "sha256": "374ad135c3d4ff3ec080a0009cd9745cdd0e12faa89d2b0e86074f11e5127fd1"
+    },
+    {
+      "path": "components/ui/popover.tsx",
+      "size": 2357,
+      "sha256": "31c350309ff5d3034e6ecf1b0eda75ba8855bdbf987fc7ad6d71f0ef07c5a447"
+    },
+    {
+      "path": "components/ui/progress.tsx",
+      "size": 755,
+      "sha256": "c8c26e8f5f041c3cdf4915347dc1d9c022f9448f149990fadcaf303e952fa57d"
+    },
+    {
+      "path": "components/ui/radio-group.tsx",
+      "size": 1460,
+      "sha256": "fe5ce39636d0818c2bf9c4eebddff893d1225fa2c81b5fa4bb8cbb39a8c913ce"
+    },
+    {
+      "path": "components/ui/resizable.tsx",
+      "size": 1815,
+      "sha256": "bc63958467aa00557c551bb0d96a5ae4c965c1e1ba2380e595949d933b132f7c"
+    },
+    {
+      "path": "components/ui/scroll-area.tsx",
+      "size": 1639,
+      "sha256": "8bd9d986b2844c9a87de825c6de4787b6739b36c3dc9a05ccf3eb107160e4043"
+    },
+    {
+      "path": "components/ui/select.tsx",
+      "size": 6353,
+      "sha256": "0b796a108a4eb5ba52d9ad938b7aea36dc56ae66c703a6d0a23dbc24f96daff3"
+    },
+    {
+      "path": "components/ui/separator.tsx",
+      "size": 694,
+      "sha256": "6da346505c8629a4668420d2a5ca48891383bbe0b0ceb14163537c671879427e"
+    },
+    {
+      "path": "components/ui/sheet.tsx",
+      "size": 4188,
+      "sha256": "63863cf2df8f8973e52b3459ac9bdbf81be1262dbc70eb53d5271ffb03488e16"
+    },
+    {
+      "path": "components/ui/sidebar.tsx",
+      "size": 21526,
+      "sha256": "4a8d73e7730a2b1fcecfca31299ed26db65c2307b84197a59c6ec7c01c7ad28e"
+    },
+    {
+      "path": "components/ui/skeleton.tsx",
+      "size": 276,
+      "sha256": "ba48dd5be5a6a1378bd4e011028654b5bf419f1e7d20ee4b9f8330c1264e7239"
+    },
+    {
+      "path": "components/ui/slider.tsx",
+      "size": 1991,
+      "sha256": "0e37484f4b416e79ac18c655cac961aefacf6e67085cfc2b320ea8af545635a3"
+    },
+    {
+      "path": "components/ui/sonner.tsx",
+      "size": 1034,
+      "sha256": "13ccc9b0fe4248e622f83a1d3b2f0566b72b5e04162d7d0c8db8945ecc71b55f"
+    },
+    {
+      "path": "components/ui/spinner.tsx",
+      "size": 331,
+      "sha256": "3e6e6e8d37fb4069f8e43e55318f8db06fbc36e6c8be0096da3c9337c1c798b9"
+    },
+    {
+      "path": "components/ui/switch.tsx",
+      "size": 1408,
+      "sha256": "386d4d4deb39f34126f9700fe9bf5393d238485dd94018bba9d154dda84c62ae"
+    },
+    {
+      "path": "components/ui/table.tsx",
+      "size": 2478,
+      "sha256": "20e5a7f224959c6b75802995706a97e9da171f693d4b6b1b436388fcd9df96f3"
+    },
+    {
+      "path": "components/ui/tabs.tsx",
+      "size": 3782,
+      "sha256": "865d0194331b9b2be36723fa79d3575dc83078b4cb941cafee87cb72fc2cff46"
+    },
+    {
+      "path": "components/ui/textarea.tsx",
+      "size": 759,
+      "sha256": "253cdeb487c73beaaccdf47fc163e36e7d5b7ae6ddf09a4f64998a109a112979"
+    },
+    {
+      "path": "components/ui/toggle-group.tsx",
+      "size": 2308,
+      "sha256": "69f643e889e933f05c1439084480d8646f66a161c7d1cf0730ee926382ade35e"
+    },
+    {
+      "path": "components/ui/toggle.tsx",
+      "size": 1565,
+      "sha256": "ba4d0b0a2b2fee75dc36dfc19e32082e721024b919050c97fd5dc70faa924e16"
+    },
+    {
+      "path": "components/ui/tooltip.tsx",
+      "size": 1830,
+      "sha256": "a0784eb77831a799fad7991df4f1b666f876201565a80175e1aa68733574a2e4"
+    },
+    {
+      "path": "components.json",
+      "size": 420,
+      "sha256": "31f4ca67a4a62572571003d3d5aac85ee6fbfca67a192924bac6b168d95e98fd"
+    },
+    {
+      "path": "db/index.ts",
+      "size": 423,
+      "sha256": "dc7610b00b918e0ffff1360a63626f16655ced3064b2eaf96095a4101fb14bcd"
+    },
+    {
+      "path": "db/schema.ts",
+      "size": 169,
+      "sha256": "13ddacbf0be50e054d450a6c642b7fdc1aa943fd6b99084711e07e58b600390d"
+    },
+    {
+      "path": "drizzle.config.ts",
+      "size": 148,
+      "sha256": "af081f7384aaeb0082cf422e29f139d137ca2f6a57c69b2c37b9fb1f8479867b"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "size": 846,
+      "sha256": "f22a254df7d934bbf9be499d3c969a13abb7f7f64c03f5967d0095cad81dfe06"
+    },
+    {
+      "path": "examples/d1/app/api/notes/route.ts",
+      "size": 1700,
+      "sha256": "a3d4a74fd53b7bf53e2df41f169d9d9d44a8b22aeb6d92f4e754956079af8909"
+    },
+    {
+      "path": "examples/d1/db/schema.ts",
+      "size": 370,
+      "sha256": "d89eabd95716ce404f5f7ca2a254220435be8ddce7c899d7ef461ff22ec80454"
+    },
+    {
+      "path": "features/courses/actions.ts",
+      "size": 1142,
+      "sha256": "5ca44d6f089f5668a0a791e4290d5d2d0ace1c4ccd0cdb72bbd09324b56a6e87"
+    },
+    {
+      "path": "features/courses/course-art.ts",
+      "size": 805,
+      "sha256": "351a1c982cbf4a1de158fd25d746922bde6d4823e385830ce735bfbc6b3e575f"
+    },
+    {
+      "path": "features/courses/course-card.tsx",
+      "size": 2016,
+      "sha256": "eab39d855bfece53351226ffef231ad29e7d37f99368dafe065eb0b3d9f062ed"
+    },
+    {
+      "path": "features/courses/course-create.tsx",
+      "size": 1091,
+      "sha256": "670193a9d6019df23704219bbf49d95b0ccdda7190bb396067bc04ce827f83d7"
+    },
+    {
+      "path": "features/courses/course-detail.tsx",
+      "size": 3830,
+      "sha256": "12114b8a551283d1a2d59fd5546d15479599261271c4d9f26e9ba71c6216f6a8"
+    },
+    {
+      "path": "features/courses/course-form.tsx",
+      "size": 8594,
+      "sha256": "b5bf32e8d9ce5ee267c2000bc74c913e8f05b0a38cc1012f454daf43be8b2f48"
+    },
+    {
+      "path": "features/courses/course-migration.tsx",
+      "size": 3816,
+      "sha256": "3477248a8806b85140277c0d9a0d3de3d7fab5098cb0343648f944a31fde23f7"
+    },
+    {
+      "path": "features/courses/course-shared.tsx",
+      "size": 2103,
+      "sha256": "e2e6a1906d95ef226939b6f3b142d75a31978c4d7909cd65c8f3cc2816934966"
+    },
+    {
+      "path": "features/courses/courses-view.tsx",
+      "size": 4130,
+      "sha256": "e5c7a4bf84171c64f511a9443d5b73b7b52c54a16cb02a9e931e92f0e936bcbc"
+    },
+    {
+      "path": "features/courses/learning-pages.css",
+      "size": 13505,
+      "sha256": "fbe869698984c2a9d18742901e6cc730944bafb0df9b6040d1803bf0d4ef3be1"
+    },
+    {
+      "path": "features/courses/learning-stats.ts",
+      "size": 779,
+      "sha256": "e9f565fa011936e3cb6d20d3ed8c24c781c4585d61f149c0e0a1abbc5d7f8412"
+    },
+    {
+      "path": "features/courses/legacy-import.ts",
+      "size": 1026,
+      "sha256": "958b20e34819eb48d2aa7b9ed20f26c1b52c55a8f4dae31c182a53e83afe9f51"
+    },
+    {
+      "path": "features/courses/model.ts",
+      "size": 3132,
+      "sha256": "9ff5ca3ef9b21819692d8fdbaf0bb3111cba5117774facbd41c1b5ab1738a9a1"
+    },
+    {
+      "path": "features/courses/public-catalog.ts",
+      "size": 779,
+      "sha256": "a3861ced251c74251085fc6348e6c075b61f34c47dd1a98890cf54b061423eca"
+    },
+    {
+      "path": "features/courses/repository.ts",
+      "size": 3199,
+      "sha256": "9fe6127096375f96c23b1b408765b00e56d6fb32d0c892da3d05287cdbb61951"
+    },
+    {
+      "path": "features/courses/supabase-repository.ts",
+      "size": 5862,
+      "sha256": "656a6e058422dd30e67ab58b4fd86fb01d0879b78d8e5eb253c908bd99b2b6f2"
+    },
+    {
+      "path": "features/courses/use-courses.ts",
+      "size": 3449,
+      "sha256": "20c39de9c4e9b9948351252b11fe5e7d81f790a3eb101cdaab49b34e5870dca4"
+    },
+    {
+      "path": "features/dashboard/admin-pages.css",
+      "size": 15948,
+      "sha256": "977c8db21f6b0e844ad66f4700c833925e5489af26a318ba863130df16f98628"
+    },
+    {
+      "path": "features/dashboard/command-palette.tsx",
+      "size": 5448,
+      "sha256": "7e0b79cdbfe7e56adb3384eca0a3324281320ec4424649c4ec22240c0222facf"
+    },
+    {
+      "path": "features/dashboard/dashboard-view.tsx",
+      "size": 6583,
+      "sha256": "59c345bab064c03c9da139a913b513c9b1bff6f1ae3db017c42fe9ed185ab390"
+    },
+    {
+      "path": "features/dashboard/report-model.ts",
+      "size": 4839,
+      "sha256": "cc2f93702527e2292640fa88780dc3b97730a3fce2064faf61476e6abab559cb"
+    },
+    {
+      "path": "features/dashboard/report-ui.tsx",
+      "size": 8778,
+      "sha256": "59a30a79cfda1b42375670cadcf5e92f88c170bac665e4c8d0582523123452e5"
+    },
+    {
+      "path": "features/enrollments/actions.ts",
+      "size": 911,
+      "sha256": "d92201ddf845832fc03fa1add680e72686dfccc0c229d3b7d20b64b39d3870e0"
+    },
+    {
+      "path": "features/enrollments/supabase-repository.ts",
+      "size": 4747,
+      "sha256": "a0630906d78d6771ad3015741f24a4cbcad4eb9ce53a411ed6fc6cedbcbd7125"
+    },
+    {
+      "path": "features/enrollments/use-enrollments.ts",
+      "size": 3274,
+      "sha256": "aaba5625ea1f99d43a5dc78509cb98d6c48bd4191f09820dbc95f946fad89f6a"
+    },
+    {
+      "path": "features/invitations/actions.ts",
+      "size": 510,
+      "sha256": "56b30e0d98ba9602a3c3845477e81619779b02d3693b6d1df477f35d15d8c2fe"
+    },
+    {
+      "path": "features/invitations/password.ts",
+      "size": 1873,
+      "sha256": "8f95866c879a333c1d982c60481bd0424344521487637dc00bf778d2b2e63919"
+    },
+    {
+      "path": "features/invitations/service.ts",
+      "size": 5021,
+      "sha256": "afe11b9f76e29fc3b566f4754322840231502aca06a894de363d745d7c8f80a1"
+    },
+    {
+      "path": "features/lessons/actions.ts",
+      "size": 1175,
+      "sha256": "23a0b57784dc7e1a542fb66d7866741981e722af40b5d2a47ca53bb71fe5ec8c"
+    },
+    {
+      "path": "features/lessons/legacy-import.ts",
+      "size": 959,
+      "sha256": "af8721e4e59b08e94863553e895c233d24edc6719a94001e4cc0e021197c3d30"
+    },
+    {
+      "path": "features/lessons/lesson-migration.tsx",
+      "size": 4316,
+      "sha256": "3d9870dfc8e81a0a7226fa6aa241415625815ac931def99d74e21f04bb532c60"
+    },
+    {
+      "path": "features/lessons/supabase-repository.ts",
+      "size": 7364,
+      "sha256": "54e790e97b12eea95d2ea4afc62ebdda5b5402dc44bfacbabe16501f4624155b"
+    },
+    {
+      "path": "features/lessons/use-lessons.ts",
+      "size": 3482,
+      "sha256": "517100e205d747b4252bb496e4eaa8e8e9f808f877cee9157153642cd488250f"
+    },
+    {
+      "path": "features/workspace/access.tsx",
+      "size": 3185,
+      "sha256": "a239352991fda74c3922e9572eb35690323172439337211bbcef9740d8c97568"
+    },
+    {
+      "path": "features/workspace/account-pages.css",
+      "size": 17367,
+      "sha256": "a4f4d273edaef7aad83a8a9fde21af68005adf2cf24703201a026809e61258d7"
+    },
+    {
+      "path": "features/workspace/account-ui.tsx",
+      "size": 2267,
+      "sha256": "981b10fec1e5934e11e0ee5428f41664e5cc64d838d61e11d859d87e0e23b69a"
+    },
+    {
+      "path": "features/workspace/account-utils.ts",
+      "size": 2069,
+      "sha256": "74f434f1aaebf3ede57f6104c59660c016b82f680328f10aeb11ab05fd2b4950"
+    },
+    {
+      "path": "features/workspace/actions.ts",
+      "size": 837,
+      "sha256": "1d6db04e7df96253705844fb8edf3cdf7000fa7eb7193ad20008150e3106d8e1"
+    },
+    {
+      "path": "features/workspace/admin-lessons.tsx",
+      "size": 10979,
+      "sha256": "ed1a8f40f574e85a217b8065eccfbb6c56ca389362e18522eea1acd2bfc30eae"
+    },
+    {
+      "path": "features/workspace/admin-quizzes.tsx",
+      "size": 21764,
+      "sha256": "06305e483d8083d57e4d9867d7e601eaffdfb13badf37c6377bebf7a937908b7"
+    },
+    {
+      "path": "features/workspace/admin-students.tsx",
+      "size": 13501,
+      "sha256": "b2e7f61ae5f3d2352cd94e584a2b46a8b0d8ed29d4197f2060783da139a6dfb8"
+    },
+    {
+      "path": "features/workspace/analytics.tsx",
+      "size": 5354,
+      "sha256": "b785c0dea9897013c4e3384c693f713eb195463130204b43c1a0bb694d9e7602"
+    },
+    {
+      "path": "features/workspace/home.tsx",
+      "size": 5417,
+      "sha256": "81de7475de149bf8bd505bd9cf6c7aa4a858df2ad1d00cf05f04e5ad2a1e0dd5"
+    },
+    {
+      "path": "features/workspace/invitation-pages.css",
+      "size": 4083,
+      "sha256": "71421c15031007098cd147f5253dda3b947cb2e97a4d91d1b39259773810ebe9"
+    },
+    {
+      "path": "features/workspace/invitation.tsx",
+      "size": 9492,
+      "sha256": "6da9bc95db1486a1eeab6fa824810b5feb61181c779a46ccdce7822083c29b0f"
+    },
+    {
+      "path": "features/workspace/learning-model.ts",
+      "size": 3274,
+      "sha256": "d8d3e844978dc72e8b1ba210825e74559571ce2f111c521c81ac591479a908fe"
+    },
+    {
+      "path": "features/workspace/legacy-import.ts",
+      "size": 809,
+      "sha256": "96eb218fbfd218b25be402a8b578b55b8ac588def36f8525f5b333f752086320"
+    },
+    {
+      "path": "features/workspace/lesson-curriculum.tsx",
+      "size": 2042,
+      "sha256": "1d5f47daaa62800bc17bdec4b3ebfe3dc40036723e60bef754b22c639ed58b1c"
+    },
+    {
+      "path": "features/workspace/lesson-reader.tsx",
+      "size": 8329,
+      "sha256": "fdba7a7bf65cb92273616f0b00813afe16fcf0e634d6e1f6cfcbadaf0853b9c0"
+    },
+    {
+      "path": "features/workspace/model.ts",
+      "size": 15058,
+      "sha256": "801f475df5df811ca9d9c10d9630e2bb3c244e78462a71cf464277ece158f31b"
+    },
+    {
+      "path": "features/workspace/not-found-view.tsx",
+      "size": 1839,
+      "sha256": "ada61b564c5daf8916c7c3cc76ada7edfa056169093969336b2914119acef2fe"
+    },
+    {
+      "path": "features/workspace/password-recovery.tsx",
+      "size": 8588,
+      "sha256": "a6bb5a78be4cb734dc82a174d7a77e1f99152b409d0c8b154ee52eacabf9723e"
+    },
+    {
+      "path": "features/workspace/profiles.tsx",
+      "size": 11192,
+      "sha256": "50c4acb86175680472f4137a1ce5bf22bf873e37ce618f31b07888965211c800"
+    },
+    {
+      "path": "features/workspace/public-pages.css",
+      "size": 28513,
+      "sha256": "f5cb4c462abcaf1412b8039388ef6ae1b7128d97ea3be3eb1acdb43d38c2d47e"
+    },
+    {
+      "path": "features/workspace/public-ui.tsx",
+      "size": 5320,
+      "sha256": "e54cc2dc90bc8a6e76050ab9f6c529e9310e7b79137af017f0356311717c8413"
+    },
+    {
+      "path": "features/workspace/quiz-pages.css",
+      "size": 11039,
+      "sha256": "98cbc8b17fe95f1ac846c4548199102737dda2226df8deff15b64557b2209d32"
+    },
+    {
+      "path": "features/workspace/repository.ts",
+      "size": 3944,
+      "sha256": "c55d56084a3590f669b1b9ad9ebd1c8057dbb0c7681c33166f1765d0a7e13072"
+    },
+    {
+      "path": "features/workspace/results.tsx",
+      "size": 12460,
+      "sha256": "1b03f69140242e5c8c9d5641685bcd36e0bdab546e3df76922fa90ff9958dada"
+    },
+    {
+      "path": "features/workspace/settings.tsx",
+      "size": 6440,
+      "sha256": "f4a2af077a3c1058f908ad6d6f69b0e1d6db472eb8ef2ad4fe59b504ead85501"
+    },
+    {
+      "path": "features/workspace/store.ts",
+      "size": 4207,
+      "sha256": "c53589a9820c6938a9be1ea19160000e47b92cf75bc5e015aea52b244612445f"
+    },
+    {
+      "path": "features/workspace/student-course-view.tsx",
+      "size": 5705,
+      "sha256": "c70aa07c11b648a1947801d9397c31af0ff178c56a213e4d88481d0a06cb7b20"
+    },
+    {
+      "path": "features/workspace/student-pages.tsx",
+      "size": 6283,
+      "sha256": "7f3d4f89ea6b6e9357db2568d81dde870f7f21d53c917d19393353edcd88fbca"
+    },
+    {
+      "path": "features/workspace/student-quizzes.tsx",
+      "size": 7717,
+      "sha256": "a87f62f20829d687954bee824e8bfb8253bc8f10a23c3fb54aff2ff7d879d491"
+    },
+    {
+      "path": "features/workspace/supabase-repository.ts",
+      "size": 5854,
+      "sha256": "b36a322492ff778d1e92fa14ed2b50f58fe7513e2bf0f72223fd3f056b9ea3db"
+    },
+    {
+      "path": "features/workspace/ui.tsx",
+      "size": 3039,
+      "sha256": "dc0b26c6b3df720100a1acdd98e6f4f434fb22f5b85c143578fa94f7a8470906"
+    },
+    {
+      "path": "features/workspace/workspace-migration.tsx",
+      "size": 3180,
+      "sha256": "693130cc8387cb923d94365a712c223af70858fed46cd9e75f26579c2f425558"
+    },
+    {
+      "path": "hooks/use-mobile.ts",
+      "size": 565,
+      "sha256": "ad0936f84f1df79d3697bfbff9c18f8ad58431c1cbaf2359c6a853b0fcc9f28b"
+    },
+    {
+      "path": "instrumentation.ts",
+      "size": 864,
+      "sha256": "cebda5f76bb00f64821afd329150b51ddb75a084cfe735a1cd4f1edda77df5c6"
+    },
+    {
+      "path": "lib/auth-destination.ts",
+      "size": 1599,
+      "sha256": "27c2858219f30e903b005197d9d1fb06871f63a45c24a5cb32ea1f99ee48fd3d"
+    },
+    {
+      "path": "lib/auth-form-feedback.ts",
+      "size": 5088,
+      "sha256": "c4f9d6ee5fe5106cf881753cf760f2b82565a1560c2b168d1328c5223ff938c4"
+    },
+    {
+      "path": "lib/auth.ts",
+      "size": 1688,
+      "sha256": "b2475c060eeff1e580ce6bbba166814a852ad3829d6ea147f24776243a71cc03"
+    },
+    {
+      "path": "lib/data/dashboard.ts",
+      "size": 1991,
+      "sha256": "e9be7db3bb6a29f40e8401be2e47a2fe930eedf83baf518e86e57d9816ea1b33"
+    },
+    {
+      "path": "lib/password-rules.ts",
+      "size": 445,
+      "sha256": "e619dd0cfd38512522d6876167ede113b8c7c6490e41dbcd747098e611af350f"
+    },
+    {
+      "path": "lib/public-language.ts",
+      "size": 15970,
+      "sha256": "0f586b8e648429c4cd4bb161fbd7639f1d0f1f24c86999a19d4523167613d9bf"
+    },
+    {
+      "path": "lib/supabase/admin.ts",
+      "size": 533,
+      "sha256": "e9ccd645e78c87204779c41591dfc8934270412705a2395bcf8a8981a30a9662"
+    },
+    {
+      "path": "lib/supabase/client.ts",
+      "size": 382,
+      "sha256": "0121cf521b82b749c7343a75107f5cef46c4b9ee0a9b094d2ab4c437990fc173"
+    },
+    {
+      "path": "lib/supabase/config.ts",
+      "size": 627,
+      "sha256": "3b3ef6063c7ba79f90a11eb485e223658a5ecf9848f6f7b58091c306da504bf8"
+    },
+    {
+      "path": "lib/supabase/proxy.ts",
+      "size": 1232,
+      "sha256": "25126b18d015299e31c6bc5ace62081858628407797ee182022ee5cbfbdd1173"
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "size": 736,
+      "sha256": "8fee30c60aa2730b2803ea3d75f0cb5f19844d7a59eb0e8a549c428ec6d3a09a"
+    },
+    {
+      "path": "lib/utils.ts",
+      "size": 177,
+      "sha256": "53f3d3d070f0a9082934da25b875f9499855c2b0693868dd28be8c23d8730f68"
+    },
+    {
+      "path": "next-env.d.ts",
+      "size": 247,
+      "sha256": "7b550dda9686c16f36a17bf9051d5dbf31e98555b30d114ac49fc49a1e712651"
+    },
+    {
+      "path": "next.config.ts",
+      "size": 133,
+      "sha256": "614bce25b089c3f19b1e17a6346c74b858034040154c6621e7d35303004767cc"
+    },
+    {
+      "path": "package-lock.json",
+      "size": 500511,
+      "sha256": "954acfe9bb8edc53a90bd183cf15b790e894449f072edcaf6c762584e6455da1"
+    },
+    {
+      "path": "package.json",
+      "size": 2456,
+      "sha256": "4fa20d2294bd3a0f86b6095d155585dd1074516446546a523b56a03bd264dc37"
+    },
+    {
+      "path": "postcss.config.mjs",
+      "size": 94,
+      "sha256": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde"
+    },
+    {
+      "path": "proxy.ts",
+      "size": 326,
+      "sha256": "478b8b6d8b060981da1fe1923a80f7bb282582973c63113974f43750db919b44"
+    },
+    {
+      "path": "public/auth-new-password-hero.png",
+      "size": 1086380,
+      "sha256": "81b337f38b49259d3b99a8af624edf40d27f11da7885dbf459c0b28c2914d624"
+    },
+    {
+      "path": "public/auth-password-reset-hero.png",
+      "size": 962045,
+      "sha256": "5b47a98c0d9d7b1652564b0abdbb97c8a9f0f4946ee2d649846be69cfa642c22"
+    },
+    {
+      "path": "public/brand/gradexa-mark.svg",
+      "size": 3285,
+      "sha256": "ec0e19157920f690b86c337787b15f2eca2bc1a5418ee73593c66701bd7f67a6"
+    },
+    {
+      "path": "public/brand/gradexa-ribbon.mjs",
+      "size": 5494,
+      "sha256": "ab6b4a1144387952de5b9d4db2a8b4ca791cccd6a136f587439442b76f958295"
+    },
+    {
+      "path": "public/favicon.svg",
+      "size": 3356,
+      "sha256": "d9c10830db9f55fe4c3a9e9262e4b93b1b9099a516cd0513bec7c2ad607f105e"
+    },
+    {
+      "path": "public/file.svg",
+      "size": 392,
+      "sha256": "1e0ae4d1a1ddfa36752988647b731e4abf150c414d069ec83c96fb0aaeff0307"
+    },
+    {
+      "path": "public/globe.svg",
+      "size": 1036,
+      "sha256": "d051a8c47936990a9085693d307bb7cea1bc1b6d7ed956bcbaacf674f4ec96b9"
+    },
+    {
+      "path": "public/images/gradexa/course-frontend.png",
+      "size": 2034197,
+      "sha256": "ca5ac33084b9eb3faad92da29d6cf7c74e9065f6f952bb550c2c0d7e7f9e983a"
+    },
+    {
+      "path": "public/images/gradexa/course-javascript.png",
+      "size": 2156611,
+      "sha256": "3295ed02709762cc7d887b0b63ab1b343db6c6d08a9c734dae708d5e738a8f41"
+    },
+    {
+      "path": "public/images/gradexa/course-ui.png",
+      "size": 1919931,
+      "sha256": "97e53102bedc82bc3bb1c254fdf802612f50cc073f6c6106b71939167c645c97"
+    },
+    {
+      "path": "public/images/gradexa/learning-hero.png",
+      "size": 1992604,
+      "sha256": "83ea635bc4d029801c5972da4b929061fbf91858903ea70fad4b965defe71cfa"
+    },
+    {
+      "path": "public/images/gradexa/not-found.png",
+      "size": 1818887,
+      "sha256": "45f7c05890a32b133e2bf3ce77b647651d3e6fda285fcaca7831f90f239ce347"
+    },
+    {
+      "path": "public/window.svg",
+      "size": 386,
+      "sha256": "decf1cf7bb22b5c99c4857cfcd5718ce5465c4454166317589c83fc73df74b66"
+    },
+    {
+      "path": "scripts/build-verified.sh",
+      "size": 661,
+      "sha256": "2ae5329ac860076070c9217a43106a15cb5ecf907a0f7baeb9ef903f76b53c68"
+    },
+    {
+      "path": "scripts/install-ci.sh",
+      "size": 7282,
+      "sha256": "658c0aefc1d907dafde98ebc288b623ab9d2824a7bb1db055370a339a794a10d"
+    },
+    {
+      "path": "scripts/sites-env.sh",
+      "size": 1530,
+      "sha256": "df86ebfc27d2f00860036658e933ac0ddd7b5f6879aa5d51218f0863c7e1fb60"
+    },
+    {
+      "path": "scripts/windows-setup.cjs",
+      "size": 4753,
+      "sha256": "d5d1876b032bd1589372733cd1b1ec84bb75da36d88defc1b6d7592599e4ece3"
+    },
+    {
+      "path": "supabase/README-UZ.md",
+      "size": 2553,
+      "sha256": "e0395f0c9aff1d7ffe4bbc999012633204e4f55b7873249183ee5b7c138374d5"
+    },
+    {
+      "path": "supabase/bootstrap-owner.sql",
+      "size": 895,
+      "sha256": "14d00949bf48668f9bea9bc60558145846460e213f73d1bf54a4e8e605e584e2"
+    },
+    {
+      "path": "supabase/migrations/202609100001_gradexa_foundation.sql",
+      "size": 13286,
+      "sha256": "da0dc215585c831072594c505f0ac051f8bca97d7cedff5d5e40a926f65648f7"
+    },
+    {
+      "path": "supabase/migrations/202609250001_courses_data_layer.sql",
+      "size": 2500,
+      "sha256": "54abca79cabea0cd63dc36986b77088c1f661311b38bc36fecc752c4b6a680c7"
+    },
+    {
+      "path": "supabase/migrations/202610020001_enrollments_data_layer.sql",
+      "size": 1268,
+      "sha256": "5fd16ee147fe545d4f992861c09645f2aa9a5020aff9f68aed3de56fa59e3050"
+    },
+    {
+      "path": "supabase/migrations/202610020002_lessons_data_layer.sql",
+      "size": 3009,
+      "sha256": "ee1c08dd226195f62eeb6adbbcb4da7421480f37c6c3ec85bafcec14e3747632"
+    },
+    {
+      "path": "supabase/migrations/202610020003_workspace_data_layer.sql",
+      "size": 25764,
+      "sha256": "38977366743e89448d890baa9102a40d002edc3b47ae9cb435f9311e8a0a4800"
+    },
+    {
+      "path": "supabase/migrations/202610060001_student_invitations.sql",
+      "size": 14562,
+      "sha256": "32c2021bf662d776dd1bc7ac4ddc2c2883919face22e82b91bb8fbb2b9d18088"
+    },
+    {
+      "path": "tests/auth-destination.test.mjs",
+      "size": 988,
+      "sha256": "a9a24a4a077fe167d819d4b220581944bfe3f07dbd45614dc15ef722eab7c2e6"
+    },
+    {
+      "path": "tests/courses.test.mjs",
+      "size": 4269,
+      "sha256": "57664abc86ffdf54730e5418b6f2565aae6d7a4af4b7aa2e3d57ded92e2da2f5"
+    },
+    {
+      "path": "tests/invitations-database.integration.mjs",
+      "size": 9376,
+      "sha256": "c648afe6dfc0bfdb12993d17890f4f75b309c7d16bce38e2f4de9ff6dc5ba374"
+    },
+    {
+      "path": "tests/invitations.test.mjs",
+      "size": 6117,
+      "sha256": "3a4e3837aff28f26a577f308932624ca354e55fcc8cc354b07cf21e2e9cbe69a"
+    },
+    {
+      "path": "tests/rendered-html.test.mjs",
+      "size": 2285,
+      "sha256": "42b9f61c441651b4d69a1a252b1ab6ac7be8eea1ae135112dfb46dfccd176d6a"
+    },
+    {
+      "path": "tests/supabase-courses.test.mjs",
+      "size": 9088,
+      "sha256": "a8ba539dd674a841eb826f0b06e520815ac5c374ab8c9ceffd2a03dde6eca10e"
+    },
+    {
+      "path": "tests/supabase-enrollments.test.mjs",
+      "size": 6605,
+      "sha256": "63150d2f5d60c8b7e16a16574e594dc71c6bf6f2e5bfa301f4f5353f5ec7af41"
+    },
+    {
+      "path": "tests/supabase-lessons.test.mjs",
+      "size": 8148,
+      "sha256": "9d5065c620333cba7874e23f0cd1a26c8381b3f4736b5f0c67f3a942d3162f02"
+    },
+    {
+      "path": "tests/supabase-workspace.test.mjs",
+      "size": 5284,
+      "sha256": "c5c45945323eb4d3abc500d43ea8ee1c0faad7803d50ffbd276599f30e897bb4"
+    },
+    {
+      "path": "tests/ui-components.test.mjs",
+      "size": 2840,
+      "sha256": "08e681a25fe202a00d7d9e790804e4dc115a8a9388bb47a2c2e0211ec810fb02"
+    },
+    {
+      "path": "tests/workspace-database.integration.mjs",
+      "size": 13499,
+      "sha256": "9e243fb3de6b5721b13681dee63ac280f035cf8c11cfaa14adc9e5211b335449"
+    },
+    {
+      "path": "tests/workspace.test.mjs",
+      "size": 4513,
+      "sha256": "282a695f4ea4c74124f3eb3e4dd65ab19565eaf360c913927f2905d9e107ca0f"
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 739,
+      "sha256": "95969c59479907e7a519637dbe5b5a4ecadf0ee3d1c4d1ddb0cfa780dbe761c2"
+    },
+    {
+      "path": "vendor/shadcn-tailwind-4.13.0.LICENSE.md",
+      "size": 1063,
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f"
+    },
+    {
+      "path": "vendor/shadcn-tailwind-4.13.0.css",
+      "size": 16041,
+      "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a"
+    },
+    {
+      "path": "vite.config.ts",
+      "size": 1807,
+      "sha256": "43e5f02f727ca043f08ebf34789f330580a7a0cb90f426c92f4a454d066988fc"
+    },
+    {
+      "path": "worker/index.ts",
+      "size": 1731,
+      "sha256": "2ed36d7fa996e946d9d7695c5925e7760246f6bf8fa35c06f1bc515c087dc450"
+    }
+  ]
+}

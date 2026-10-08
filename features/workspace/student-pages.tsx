@@ -1,0 +1,160 @@
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+import {
+  BookOpen,
+  ArrowRight,
+  PlayCircle,
+  CheckCircle2,
+  ClipboardList,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useWorkspace, type Workspace } from "./store";
+import { studentProgress } from "./model";
+import { nextStudentLesson, recentAttempts } from "./study-flow";
+import { CourseCard } from "@/features/courses/course-card";
+import { AccountHeading } from "./account-ui";
+import { Search } from "lucide-react";
+import {
+  PageHeading,
+  WorkspaceGate,
+  CourseEmpty,
+  MetricRow,
+  saved,
+} from "./ui";
+export function StudentAccess({
+  w,
+  children,
+}: {
+  w: Workspace;
+  children: React.ReactNode;
+}) {
+  return (
+    <WorkspaceGate workspace={w}>
+      {w.student?.status === "active" ? (
+        children
+      ) : (
+        <CourseEmpty
+          title="Faol talaba profili tanlanmagan"
+          description="O‘quv profilingiz faol emas. Administrator bilan bog‘laning."
+        >
+          <Button asChild>
+            <Link href="/login">Kirish sahifasi</Link>
+          </Button>
+        </CourseEmpty>
+      )}
+    </WorkspaceGate>
+  );
+}
+export function StudentHome() {
+  const w = useWorkspace();
+  const courses = w.courses.filter(
+    (c) => c.status === "published" && w.student?.courseIds.includes(c.id),
+  );
+  const attempts = recentAttempts(w.data.attempts.filter((a) => a.studentId === w.student?.id));
+  const completed = w.data.completed[w.student?.id ?? ""] ?? [];
+  const next = nextStudentLesson(courses, w.data.lessons, completed, w.student);
+  return (
+    <StudentAccess w={w}>
+      <PageHeading
+        title={`Salom, ${w.student?.name.split(" ")[0] ?? "talaba"}!`}
+        subtitle="Bugungi kichik qadam ertangi katta natijaning boshlanishi."
+      />
+      <MetricRow
+        items={[
+          { label: "Mening kurslarim", value: courses.length },
+          {
+            label: "Yakunlangan darslar",
+            value: completed.filter((id) =>
+              w.data.lessons.some(
+                (l) =>
+                  l.id === id &&
+                  l.published &&
+                  courses.some((c) => c.id === l.courseId),
+              ),
+            ).length,
+          },
+          { label: "Topshirilgan testlar", value: attempts.length },
+          {
+            label: "O‘quv maqsadi",
+            value: `${w.data.preferences.weeklyGoal} dars / hafta`,
+          },
+        ]}
+      />
+      {next ? (
+        <section className="continue-card">
+          <div>
+            <span className="eyebrow">DAVOM ETTIRING</span>
+            <h2>{next.title}</h2>
+            <p>
+              {w.courses.find((c) => c.id === next.courseId)?.title} ·{" "}
+              {next.minutes} daqiqa
+            </p>
+          </div>
+          <Button asChild>
+            <Link href={`/student/lessons/${next.id}`}>
+              <PlayCircle />
+              Darsni boshlash
+            </Link>
+          </Button>
+        </section>
+      ) : (
+        <section className="panel">
+          <h2 className="section-title">Keyingi bilim yo‘lini tanlang</h2>
+          <Button asChild variant="outline">
+            <Link href="/student/courses">Kurslarni ko‘rish</Link>
+          </Button>
+        </section>
+      )}
+      <div className="panel-heading mb-5">
+        <h2 className="section-title">Mening kurslarim</h2>
+        <Link className="text-link" href="/student/courses">
+          Barchasi →
+        </Link>
+      </div>
+      <StudentCourseCards w={w} courses={courses} />
+      <section className="panel recent-panel">
+        <div className="panel-heading">
+          <h2 className="section-title">Oxirgi natijalar</h2>
+          <Link href="/student/results" className="text-link">
+            Barchasi →
+          </Link>
+        </div>
+        {attempts.length ? (
+          attempts.slice(0, 3).map((a) => (
+            <Link
+              className="activity-row"
+              key={a.id}
+              href={`/student/results/${a.id}`}
+            >
+              <ClipboardList size={18} />
+              <span>{a.title}</span>
+              <strong>{a.score}%</strong>
+              <ArrowRight size={16} />
+            </Link>
+          ))
+        ) : (
+          <p className="muted-paragraph">
+            Birinchi testni topshirgach, natijangiz shu yerda ko‘rinadi.
+          </p>
+        )}
+      </section>
+    </StudentAccess>
+  );
+}
+function StudentCourseCards({ w, courses }: { w: Workspace; courses: Workspace["courses"] }) {
+  return courses.length ? <div className="gc-page gc-course-grid">{courses.map(course => {
+    const p = studentProgress(w.data, w.student?.id ?? "", course.id);
+    return <CourseCard key={course.id} course={course} lessons={p.total} completed={p.completed} progress={p.percent} student />;
+  })}</div> : <CourseEmpty title="Kurs topilmadi" description="Barcha kurslar bo‘limidan o‘quv dasturini tanlang." />;
+}
+export function StudentCourses() {
+  const w = useWorkspace();
+  const [tab, setTab] = useState("mine"), [query, setQuery] = useState("");
+  const courses = w.courses.filter(c => c.status === "published" && (tab === "all" || w.student?.courseIds.includes(c.id)) && (c.title + " " + c.category).toLowerCase().includes(query.trim().toLowerCase()));
+  return <StudentAccess w={w}><div className="ga-page gc-page"><AccountHeading title="Mening kurslarim" subtitle="Bilim sari navbatdagi qadamingizni boshlang." /><div className="gc-toolbar"><Tabs value={tab} onValueChange={setTab}><TabsList className="gc-tabs"><TabsTrigger value="mine">Mening kurslarim</TabsTrigger><TabsTrigger value="all">Barcha kurslar</TabsTrigger></TabsList></Tabs><div className="gc-search"><Search size={18} /><Input value={query} onChange={e => setQuery(e.target.value)} placeholder="Kurs qidirish…" aria-label="Kurs qidirish" /></div></div><StudentCourseCards w={w} courses={courses} /><p className="ga-footnote">Progress akkauntingizda yakunlagan darslaringiz asosida hisoblanadi.</p></div></StudentAccess>;
+}
+export { StudentCourseView as StudentCourse } from "./student-course-view";

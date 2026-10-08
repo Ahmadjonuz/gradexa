@@ -1,0 +1,133 @@
+GRADEXA V2 — ADMIN PANELDAN HAQIQIY TALABA TAKLIFI
+2026-10-06 • Ahmadjon uchun
+
+NATIJA
+/admin/students: ism + email + kurslar → Taklif yuborish.
+Supabase Auth email yuboradi. Talaba /accept-invitation orqali o‘z parolini
+belgilaydi, keyin /login orqali kiradi. Rol avtomatik student. Tanlangan
+kurslar mavjud enrollments jadvalida saqlanadi. Qoralama tugmasi email yubormaydi.
+“Yuborilgan” email xizmatining so‘rovni qabul qilganini bildiradi; pochta
+qutisiga yetib borishini yetkazib berish xizmati belgilaydi.
+
+O‘RNATISH — LOYIHANI QAYTA YUKLASH KERAK EMAS
+1. UPDATE-GRADEXA-INVITATIONS.cjs faylini Desktop/gradexa ichiga,
+   package.json yoniga qo‘ying. Server ishlayotgan CMDda Ctrl+C bosing.
+   Shu gradexa papkasida CMD ochib bajaring:
+     node UPDATE-GRADEXA-INVITATIONS.cjs
+   Fayllar avval tekshiriladi, so‘ng zaxira olinib yangilanadi. Fayl farqi
+   chiqsa majburlamang: terminaldagi xabarni yuboring. Windowsdagi yangi
+   o‘zgarishlar ustidan yozilmaydi. .env.local va node_modules o‘zgarmaydi.
+2. Yaratilgan GRADEXA-INVITATIONS-UPDATE.sql faylini Notepad bilan oching.
+   Barcha matnni mavjud Gradexa Supabase loyihasining SQL Editor oynasiga
+   qo‘ying va Run bosing. Yangi loyiha yoki jadval tizimi yaratilmaydi.
+   Oldingi foundation / GRADEXA-DATA-UPDATE.sql fayllarini qayta bajarmang.
+   Bu SQL avvalgi data-layer yangilanishi o‘rnatilgan bazaga mo‘ljallangan.
+
+BIR MARTALIK EMAIL SOZLAMASI
+3. gradexa/.env.local ichida quyidagi NOMLARni tekshiring:
+     SUPABASE_SECRET_KEY
+     NEXT_PUBLIC_SITE_URL
+   SUPABASE_SECRET_KEY — shu Supabase loyihasining server secret key qiymati.
+   Uni Supabase loyiha sozlamalaridagi API Keys bo‘limidan o‘zingiz oling.
+   NEXT_PUBLIC_ prefiksini bu maxfiy kalitga qo‘shmang. Chatga yubormang.
+   Mavjud NEXT_PUBLIC_SUPABASE_URL va NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+   o‘z holida qoladi. Boshqa loyiha kalitini aralashtirmang.
+   Faqat shu kompyuterda sinov uchun:
+     NEXT_PUBLIC_SITE_URL=http://localhost:3000
+   Boshqa kompyuterdagi talaba uchun unga ochiladigan haqiqiy sayt manzili
+   kerak. localhost har kimning o‘z kompyuterini anglatadi. Ishlab turgan
+   server manzilini ishlating; bank tarmoq cheklovlarini chetlab o‘tmang.
+4. Supabase → Authentication → URL Configuration:
+   Site URL = yuqoridagi NEXT_PUBLIC_SITE_URL manzili (oxirida / qo‘shmang).
+   Redirect URLs ro‘yxatiga shu manzildagi callbackni qo‘shing. Lokal misol:
+     http://localhost:3000/auth/callback?next=%2Faccept-invitation
+   Mavjud login/parol tiklash redirectlarini o‘chirmang.
+5. Supabase → Authentication → Email Templates → Invite user:
+   Subject: Gradexa’ga taklif
+   GRADEXA-INVITE-EMAIL.html faylini NOTEPAD bilan oching va matnini
+   xatning HTML body qismiga to‘liq qo‘ying. Saqlang.
+   Boshqa email shablonlarini almashtirmang. TokenHash shabloni mavjud
+   SSR /auth/callback bilan ishlaydi; tokenni chatga ko‘chirmang.
+6. Supabase → Authentication → Email/SMTP sozlamalarida Custom SMTPni
+   o‘z email xizmatingiz ma’lumotlari bilan sozlang. Parol va kalitlarni
+   chatga yubormang. Supabase standart yuboruvchisi faqat loyiha jamoasiga
+   kiritilgan email manzillariga mo‘ljallangan; oddiy talabalar uchun
+   Custom SMTP kerak. Email tracking/link rewritingni o‘chirib qo‘ying.
+   SMTP bo‘lmasa panel aniq xato chiqaradi; yuborildi deb ko‘rsatmaydi.
+
+ISHGA TUSHIRISH VA BITTA TO‘LIQ SINOV
+7. gradexa CMD oynasida:
+     npm.cmd run typecheck
+     npm.cmd run test:next
+     npm.cmd run build:next
+   So‘ng avvalgi START-GRADEXA-BANK.cmd faylingiz bilan ishga tushiring.
+   Yangi npm paket qo‘shilmadi; qayta npm install kerak emas.
+8. Admin → Talabalar → Talaba taklif qilish:
+   Oldin hisob ochilmagan, o‘zingiz tekshira oladigan emailni kiriting,
+   kamida bitta nashr qilingan kursni belgilang va Taklif yuborish bosing.
+   Emaildagi havolani alohida brauzer/inkognito oynasida oching, parol
+   belgilang, login qiling. Kurs va darslar ko‘rinishini tekshiring.
+   Admin oynasini yangilang: shu talaba bir marta, Faol holatda chiqishi kerak.
+   Taklif havolasini admin sessiyasi turgan oynada ochish hisobni almashtiradi;
+   sinov uchun alohida oyna ishlating.
+
+QAYTA YUBORISH / XATO HOLATLARI
+Talabalar → Takliflar → yozuv menyusi → Tahrirlash → Qayta yuborish.
+Har yuborish orasida kamida 1 daqiqa; tugamagan so‘rov bo‘lsa 5 daqiqa kutiladi.
+Qayta yuborish faqat email hali tasdiqlanmagan taklif uchun. Emailni
+tasdiqlab, parolni tugatmagan talaba avvalgi parol oynasini yakunlasin yoki
+login sahifasida Parolni unutdingizmi orqali yangi havola so‘rasin.
+Taklifga yuborish urinishi boshlanganidan keyin email va kurslar muzlatiladi;
+talaba taklifni qabul qilgach, oddiy profil tahriri orqali kurslar o‘zgartiriladi.
+Allaqachon mavjud hisobga taklif yuborilmaydi va uning roli/paroli o‘zgarmaydi.
+Havola muddati Supabase Auth sozlamalari bo‘yicha; oldingi qoralamadagi sana
+email havolasi muddati deb ko‘rsatilmaydi. Eski qoralamalar bazada saqlanadi.
+
+SINOV HISOBOTI VA CHEGARALARI
+Avtomatlashtirilgan testlar: taklif ruxsatlari, email xatolari, qayta yuborish,
+uzilgan so‘rov, parol faollashuvi, noto‘g‘ri metadata, RLS va eski o‘quv amallari.
+PostgreSQL sinovlari haqiqiy SQL funksiyalarini alohida PGlite bazada bajaradi.
+Bu sinov Supabase Authning haqiqiy email yetkazishini tasdiqlamaydi.
+Sizning Windows brauzeringiz, SMTP yetkazishi va Supabase callback/cookie
+oqimi yuqoridagi to‘liq sinov bajarilmaguncha UNVERIFIED.
+Kutilayotgan taklif hisobidan parol saqlansa-yu aktivatsiya uzilsa, shu oynada
+qayta saqlash mumkin; yangi parolni ikkinchi marta almashtirish shart emas.
+
+QAYTARISH
+Faqat loyiha fayllarini qaytarish uchun terminalda yozilgan aniq zaxira yo‘li:
+  node UPDATE-GRADEXA-INVITATIONS.cjs --restore gradexa-backups/invitations-...
+Keyinroq o‘zgartirilgan fayl avtomatik ustidan yozilmaydi. Supabase SQL va
+yaratilgan hisoblar qaytarish paytida o‘chirilmaydi. SQLni qo‘llaganingizdan
+keyin Auth faollashuvi eski kodda yo‘qligi uchun yangi takliflar yuborishni
+to‘xtating; bazani orqaga qaytarish alohida tahlil talab qiladi.
+
+TEXNIK QAYD
+Feature: admin talaba taklifi va qabul qilish.
+Routes: /admin/students, /accept-invitation, /reset-password, /auth/callback.
+Storage before: Supabase student_invitation_drafts; faqat qoralama.
+Storage after: o‘sha jadval + Supabase Auth/profiles/enrollments.
+Tables: student_invitation_drafts (yangi holat ustunlari), profiles, enrollments;
+auth.users faqat mavjud Auth API orqali yaratiladi, SQL to‘g‘ridan-to‘g‘ri hisob yaratmaydi.
+RLS: mavjud siyosatlar saqlangan; yuborish RPC faqat service_role; qabul qilish
+RPC faqat o‘z tasdiqlangan va paroli bor, ishonchli taklifga mos hisobiga ishlaydi.
+Next single step: yangi email bilan admin → taklif → parol → login → kurs sinovi.
+
+RASMIY MANBALAR
+https://supabase.com/docs/reference/javascript/auth-admin-inviteuserbyemail
+https://supabase.com/docs/guides/auth/auth-email-templates
+https://supabase.com/docs/guides/auth/auth-smtp
+
+O‘ZGARGAN / QO‘SHILGAN FAYLLAR
+  features/invitations/actions.ts
+  features/invitations/service.ts
+  features/invitations/password.ts
+  features/workspace/admin-students.tsx
+  features/workspace/model.ts
+  app/reset-password/actions.ts
+  supabase/migrations/202610060001_student_invitations.sql
+  tests/invitations.test.mjs
+  tests/invitations-database.integration.mjs
+  tests/workspace-database.integration.mjs
+  package.json
+  GRADEXA-INVITATIONS-UPDATE.sql
+  GRADEXA-INVITE-EMAIL.html

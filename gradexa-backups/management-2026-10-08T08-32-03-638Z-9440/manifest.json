@@ -1,0 +1,116 @@
+{
+  "format": "gradexa-management-backup-v1",
+  "createdAt": "2026-10-08T08:32:03.741Z",
+  "files": [
+    {
+      "file": "GRADEXA-DELETE-UPDATE.sql",
+      "before": null,
+      "after": "4839617d56e9b0ccebaa81d59d04d2760ea289d36509a19b6ba63b852794fa2d"
+    },
+    {
+      "file": "GRADEXA-MANAGEMENT-UZ.txt",
+      "before": null,
+      "after": "f06d80578f642fdf475ff0de06d4d979e64667f6f8931dd038124cbc1813aba1"
+    },
+    {
+      "file": "features/courses/course-create.tsx",
+      "before": "670193a9d6019df23704219bbf49d95b0ccdda7190bb396067bc04ce827f83d7",
+      "after": "585653d022d9591a116cea52028fbacf0bc63763ed9d165e5a086b2a48193145"
+    },
+    {
+      "file": "features/courses/course-detail.tsx",
+      "before": "12114b8a551283d1a2d59fd5546d15479599261271c4d9f26e9ba71c6216f6a8",
+      "after": "7c16b6c47281a6adcd57de3c66d0c9ad8114205c6e10c82892d9619848c2f412"
+    },
+    {
+      "file": "features/courses/course-form.tsx",
+      "before": "f277258b4bd802d9bf24b988750ff6d23f9596e896636f2f21190859e0fe0f1b",
+      "after": "a9681c8fa3357c68ce64d7cddb3b87ac5e7accd60c7d7fe46c605441ab16c806"
+    },
+    {
+      "file": "features/courses/courses-view.tsx",
+      "before": "e5c7a4bf84171c64f511a9443d5b73b7b52c54a16cb02a9e931e92f0e936bcbc",
+      "after": "f3e38e1f33cbb212f16849b38695901a4ed176f1935cc5bfeb3235ea2478f671"
+    },
+    {
+      "file": "features/dashboard/dashboard-view.tsx",
+      "before": "83d11aecc2a1e95875e5e9bbbd8e21cd87b80ec2c1c6ddbfb0750b5e88daa740",
+      "after": "a7a9ed7964fbc9a1d72d864a903aa2e44a2ed0967fb2944ceb6daa980b1e9ca5"
+    },
+    {
+      "file": "features/deletions/actions.ts",
+      "before": null,
+      "after": "a793f1f6bfd8598fd8ce4daeed3e5298d323b6cdea37e1a60c7921cf0346903b"
+    },
+    {
+      "file": "features/deletions/delete-record-button.tsx",
+      "before": null,
+      "after": "d57c060d7dc9058ad4a59eeae148a4da79ab0bd135231b7d0427a1789bfd7d9b"
+    },
+    {
+      "file": "features/deletions/model.ts",
+      "before": null,
+      "after": "0b900b41a9deeffee2e2b4224dfa5f991ef5692c7b61ff6dc76404fc0b58e2e9"
+    },
+    {
+      "file": "features/deletions/service.ts",
+      "before": null,
+      "after": "c3b51c13a5a92fabea0331d2caccf00704794bd1ebda9a314bf6f51dc4f9e312"
+    },
+    {
+      "file": "features/workspace/admin-lessons.tsx",
+      "before": "6c0373171c458a14d86bb7ef4bc95ead68e8978a75f9041d25e6535d294cd003",
+      "after": "862dd8a53ff7084dd52749c0735e13dae5352d134093dd8b12c0f4a892aee710"
+    },
+    {
+      "file": "features/workspace/admin-quizzes.tsx",
+      "before": "5171ee467428bc381d883a96d4d1679744ce9cd11d06e3aec9701ac8d2e2c384",
+      "after": "91c00c2d13d86fefd1336b42639d852ec0cb0a55df9549fd50a2007133f621f6"
+    },
+    {
+      "file": "features/workspace/admin-students.tsx",
+      "before": "7d02a7f61b3e6ffa77e5ba3c10b7b73f02fe8aaa2f16c984a46c045a8a44c7cb",
+      "after": "8525a466e3c44e4c4f4d98352d30f61205c14ea2ddc6dee2744cb9be7af2c22b"
+    },
+    {
+      "file": "package.json",
+      "before": "f46245e6e8f599fc8466fe5174e32387158cbfba77613e79149bc544c63b9a97",
+      "after": "0a4b294912c363afab90bc0b52e5bac1c9ce10b4aac2f36824b1ca41225f9630"
+    },
+    {
+      "file": "supabase/migrations/202610070001_admin_deletions.sql",
+      "before": null,
+      "after": "4839617d56e9b0ccebaa81d59d04d2760ea289d36509a19b6ba63b852794fa2d"
+    },
+    {
+      "file": "tests/admin-render.test.mjs",
+      "before": "192bda9c7ed50f81e59059f21dc6ac4fd7e1f45e44f78f4017f5f5fc403cd637",
+      "after": "0e176512139589a25673a62479591725048d2ea51230ab2adb12d625edc2110f"
+    },
+    {
+      "file": "tests/deletions-database.integration.mjs",
+      "before": null,
+      "after": "2789758b09ea13f3cb1316167b092e931e09299e8a95801c1f40a1c709dc491c"
+    },
+    {
+      "file": "tests/deletions.test.mjs",
+      "before": null,
+      "after": "49da2127d95a5e816fe1e9e3c379efbc1d5b36b0b3113e3bfa36159ebdaa3edf"
+    },
+    {
+      "file": "tests/invitations-database.integration.mjs",
+      "before": "c648afe6dfc0bfdb12993d17890f4f75b309c7d16bce38e2f4de9ff6dc5ba374",
+      "after": "20f0abc2d95d9c508ee44fdabd3db5cd1dc5bb41008e78d62c22fa65d952683d"
+    },
+    {
+      "file": "tests/study-render.test.mjs",
+      "before": "d913ee9f3cbd54e7b5b0fd434395a5d6b750750dd46643d347228390b2f18bc8",
+      "after": "d365dada25e6946cbd09db577790471b08596f872a2c6910d5d5d4ae683b0cf6"
+    },
+    {
+      "file": "tests/workspace-database.integration.mjs",
+      "before": "9e243fb3de6b5721b13681dee63ac280f035cf8c11cfaa14adc9e5211b335449",
+      "after": "dc9d5cc8d474f2f40e15731c6bd1e7a150daf4b062223be008d6ab4c0e685f3c"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+GRADEXA V2 — O‘QUV OQIMI VA HISOBOTLAR YANGILANISHI
+2026-10-07 • Ahmadjon uchun
+
+MAQSAD
+Mavjud 2026-10-06 loyiha ustida dars → test → natija → admin hisoboti
+oqimidagi aniq kamchiliklar tuzatildi. Bu yangi loyiha emas.
+Login, logout, taklif, parol tiklash, Supabase clientlari, SQL va RLS
+o‘zgarmaydi. .env.local, SMTP, brauzer ma’lumotlari va bazaga tegilmaydi.
+
+O‘RNATISH
+1. UPDATE-GRADEXA-STUDY-FLOW.cjs faylini ishlayotgan gradexa papkasida
+   package.json yoniga qo‘ying. Eski server CMD oynasida Ctrl+C bosing.
+2. Shu papkaning manzil satriga cmd yozib Enter bosing. CMDda bajaring:
+     node UPDATE-GRADEXA-STUDY-FLOW.cjs --check
+     node UPDATE-GRADEXA-STUDY-FLOW.cjs
+3. Birinchi buyruq fayllarni solishtiradi, yozmaydi. Ikkinchisi zaxira olib
+   yangilaydi. “Fayllar ... farq qiladi” chiqsa, shu yerda to‘xtang.
+   Majburlab ustidan yozmang; farq qilgan fayl nomlarini yuboring.
+4. Tekshiruv:
+     npm.cmd run typecheck
+     npm.cmd run test:next
+     npm.cmd run build:next
+   Birortasi xato chiqarsa, keyingisini bajarmay xato matnini yuboring.
+5. Avval ishlagan START-GRADEXA-BANK.cmd yoki START-GRADEXA.cmd orqali oching.
+
+Yangi npm paket qo‘shilmadi: npm install / npm ci qayta kerak emas.
+Supabase SQL Editor’da hech qanday yangi SQL bajarish shart emas.
+Shablon va SMTP sozlamalarini yana o‘zgartirmang.
+
+NIMALAR TUZATILDI
+- /student: “Davom ettiring” faqat biriktirilgan nashr qilingan kursdan,
+  mavjud position/module/id tartibiga mos ochiladigan darsni tanlaydi.
+- /student, /student/profile, /admin/students/[studentId]: so‘nggi natijalar
+  UUID bo‘yicha emas, haqiqiy sana bo‘yicha tartiblanadi; mikrosoniya saqlanadi.
+- /student/quizzes va kurs sahifasi: urinishlar soni, nashr holati,
+  kursga yozilish va profil faolligi bir xil qoidada tekshiriladi.
+- Urinishlar tugagach, talaba saqlangan so‘nggi natijasiga o‘ta oladi.
+- Bo‘sh savolli test sahifani yiqitmaydi, tushunarli xabar ko‘rsatadi.
+- Testni yakunlashda tasdiqlash oynasi; yetishmagan javobga o‘tish.
+- Sahifani yangilash/yopishda javoblar yo‘qolishi haqida brauzer ogohlantiradi.
+  Test ichidagi “Testlar ro‘yxati” havolasi ham chiqishni tasdiqlatadi.
+  Yon menyu va brauzer Back uchun universal route-blocker qo‘shilmagan.
+- Yuborish natijasi kelmasa, ayni javoblar va requestId bilan qayta
+  tekshiriladi. Mavjud server idempotency qoidasi takroriy urinishni to‘sadi.
+  Bu javoblar bazaga yozilgani tasdiqlangan degani emas; natijani tekshiring.
+- Administrator testni tahrirlasa, yangilangan ma’lumot kelganda talaba
+  ogohlantiriladi; eski savollar yuborilmaydi. Server revision tekshiruvi qoladi.
+- /student/results va /admin/quiz-results: 10 tadan sahifalash, kombinatsiyali
+  filtrlar, barcha filtrlangan qatorlarni CSVga chiqarish (faqat joriy sahifa emas).
+- Talaba natijalari ?quiz=... havolasi orqali filtrlanadi.
+- Kursdan chiqarilgan talaba eski natijani ko‘radi, lekin qayta topshirish
+  tugmasi chiqmaydi. Mavjud bo‘lmagan/arxivlangan kurs havolasi ro‘yxatga qaytadi.
+- /admin kurs yakunlash filtrida faqat dastlabki 3 emas, barcha nashrdagi kurslar.
+  Joriy kurslar jadvali avvalgidek 3 ta yozuv va “Barchasi” havolasini saqlaydi.
+- /admin/analytics kunlik va soatlik guruhlash Toshkent vaqtida; natija sana
+  filtri bilan bir xil. Kurs faolligi taklif qoralamalarini hisoblamaydi.
+- Namuna hisobot saqlangan, aniq belgilangan. Undan soxta kurs yo‘liga o‘tilmaydi.
+- Natijalardagi eski “brauzerda saqlanadi” yozuvi Supabase deb to‘g‘rilangan.
+
+O‘ZGARGAN / QO‘SHILGAN FAYLLAR
+  lib/report-time.ts
+  features/workspace/study-flow.ts
+  features/workspace/student-pages.tsx
+  features/workspace/student-quizzes.tsx
+  features/workspace/student-course-view.tsx
+  features/workspace/results.tsx
+  features/workspace/profiles.tsx
+  features/workspace/analytics.tsx
+  features/dashboard/dashboard-view.tsx
+  features/dashboard/report-model.ts
+  features/dashboard/report-ui.tsx
+  app/student/results/page.tsx
+  tests/study-flow.test.mjs
+  tests/study-render.test.mjs
+  package.json (faqat test ro‘yxatiga yangi testlar)
+  GRADEXA-STUDY-FLOW-UZ.txt
+
+TEKSHIRUV DOIRASI
+Typecheck va production build; mavjud 62 test + 16 qoida testi + 8 komponent
+render testi. Render testlari ajratilgan fixture bilan, haqiqiy hisobga kirmaydi.
+Mavjud 19 PostgreSQL integratsiya testi alohida bazada: ball, takroriy so‘rov,
+RLS, ketma-ket darslar, profil huquqlari, taklif va kurs biriktirish.
+Yangi test fixturelari faqat tests/ ichida; haqiqiy UIga mock ma’lumot qo‘shilmadi.
+
+HALI WINDOWSDA TEKSHIRILADIGAN QISM — UNVERIFIED
+Ushbu paket sizning Windows nusxangizga hali o‘rnatilmagan. Avtomatik render
+sinovi haqiqiy brauzerda tugma bosish, mobil ko‘rinish yoki jonli Supabase
+so‘rovining o‘rnini bosmaydi. Quyidagi bitta to‘liq amaliy sinov kerak:
+  Student → Darsni davom ettirish → yakunlash → test → tasdiqlash → natija.
+  Natijani yangilang: bir xil urinish saqlansin. Admin → Test natijalari:
+  o‘sha natija ko‘rinsin; kurs/test/sana filtri va CSVni tekshiring.
+  10 tadan ko‘p natija bo‘lsa sahifalashni, 4+ kurs bo‘lsa admin filtrini tekshiring.
+  Telefon kengligida jadval va tasdiqlash oynasini ham tekshiring.
+
+QAYTARISH
+Yangilagich terminalda aniq zaxira yo‘lini chiqaradi. Shu yo‘l bilan:
+  node UPDATE-GRADEXA-STUDY-FLOW.cjs --restore gradexa-backups/study-flow-...
+Bu faqat yangilangan loyiha fayllarini qaytaradi; Supabase yozuvlari o‘zgarmaydi.
+Yangilanishdan keyin qo‘lda tahrirlangan fayl avtomatik ustidan yozilmaydi.
+
+KEYINGI BITTA BOSQICH
+Yuqoridagi Student → Test → Admin natija oqimini Windowsda yakuniy tekshirish.
+Vercelga chiqarish alohida bosqich: bu fayl deploy qilmaydi, domen o‘zgartirmaydi.
+Loyihaning barcha sahifalari va barcha holatlari to‘liq tekshirilgan degan da’vo yo‘q.

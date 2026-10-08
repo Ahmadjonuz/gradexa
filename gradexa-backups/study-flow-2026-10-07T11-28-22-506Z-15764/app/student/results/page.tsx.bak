@@ -1,0 +1,6 @@
+import type { Metadata } from "next";
+import { Results } from "@/features/workspace/results";
+export const metadata: Metadata = { title: "Mening natijalarim — Gradexa" };
+export default function Page() {
+  return <Results student />;
+}

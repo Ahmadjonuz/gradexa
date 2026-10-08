@@ -1,0 +1,151 @@
+GRADEXA V2 — BIRLASHTIRILGAN SUPABASE YANGILANISHI
+2026-10-02 • Ahmadjon uchun
+
+O‘RNATISH
+1. UPDATE-GRADEXA-DATA.cjs faylini Desktop dagi gradexa papkasiga,
+   package.json yoniga qo‘ying. Ishlab turgan serverni Ctrl+C bilan to‘xtating.
+2. Shu papkada CMD oching va bajaring:
+   node UPDATE-GRADEXA-DATA.cjs
+   YANGILANISH O‘RNATILDI chiqishi kerak. Fayl farqi chiqsa, hech narsani
+   majburan almashtirmang; terminaldagi aniq fayl nomini yuboring.
+3. gradexa ichida yaratilgan GRADEXA-DATA-UPDATE.sql faylini Notepad bilan
+   oching, hammasini nusxalang. Mavjud Gradexa loyihangizning Supabase
+   SQL Editor oynasida yangi query ochib, matnni joylashtiring va Run bosing.
+   Foundation SQLni qayta bajarmang. Yangi Supabase loyiha ochilmaydi.
+   Ushbu bitta SQL kurslar, yozilish, darslar va yangi workspace yangilanishlarini
+   bitta tranzaksiyada bajaradi. Uni takror bajarish ham mavjud yozuvlarni o‘chirmaydi.
+4. CMDda:
+   npm.cmd run typecheck
+   npm.cmd run test:next
+   npm.cmd run build:next
+   Xato bo‘lmasa, avvalgi START-GRADEXA-BANK.cmd faylingiz bilan ishga tushiring.
+   Yangi npm paketi qo‘shilmadi; node_modules mavjud bo‘lsa qayta install kerak emas.
+
+BITTA UMUMIY TEKSHIRUV
+Admin hisobida kurs/dars mavjudligini tekshiring; yangi test yarating, savol
+va to‘g‘ri javob/ballni belgilang, nashr qiling. F5dan keyin testni oching.
+Talaba hisobida shu kursga yoziling, darsni yakunlang, qayd yozing, testni
+topshiring. Natijani va profil o‘zgarishini F5dan keyin tekshiring.
+Admin natijalar, talaba holati/kurs biriktirish, sozlamalar va vazifalar
+saqlanishini ko‘rsin. Imkon bo‘lsa shu akkauntni boshqa brauzerda tekshiring.
+Bir testni ikki oynada tahrirlang: eskirgan tahrir yangisini ustidan yozmasligi kerak.
+
+ESKI BRAUZER MA’LUMOTLARI
+/admin/courses: mavjud “Oldingi kurslar” ko‘chirish paneli.
+/admin/lessons: mavjud darslar ko‘chirish paneli.
+/admin/quizzes: yangi “Oldingi brauzer ma’lumotlari” paneli, zaxira va test importi.
+Avval kurslar, keyin darslar va testlar ko‘chiriladi. Bazadagi bir xil IDli yozuv
+almashtirilmaydi. Hech qanday localStorage yozuvi avtomatik o‘chirilmaydi.
+Mahalliy tarixdagi profil, progress va natijalar JSON zaxirada saqlanadi.
+Ularni haqiqiy Auth akkauntlariga avtomatik bog‘lash va eski ballarni tasdiqlangan
+server natijasi sifatida import qilish kiritilmadi. Bu ma’lumotlar kerak bo‘lsa,
+alohida egasini aniqlab ko‘chirish kerak. YANGI amallar Supabase’da saqlanadi.
+
+NIMALAR ULANDI
+Kurslar /admin/courses, /student/courses — mavjud courses va enrollments.
+Darslar /admin/lessons, /student/lessons/[lessonId] — mavjud lessons.
+Progress va qaydlar — mavjud lesson_progress, faqat akkauntning o‘z yozuvlari.
+Testlar /admin/quizzes — quizzes va quiz_questions; yaratish, tahrirlash,
+nusxa olish, nashr qilish, savol qo‘shish/o‘chirish, to‘rtta variant, vaznli ball.
+Topshirish /student/quizzes/[quizId] — serverdagi javoblar asosida baholash.
+Natijalar /student/results va /admin/quiz-results — quiz_attempts;
+o‘zgarmas savollar nusxasi, urinish limiti, qayta yuborishda takror natija yo‘q.
+Profil /student/profile — profiles, ism/bio/rasm/afzal til.
+Talabalar /admin/students — haqiqiy profiles va enrollments.
+Taklif qoralamalari — yangi student_invitation_drafts (Auth akkaunti emas).
+Sozlamalar /admin/settings — workspace_settings.
+Dashboard /admin — haqiqiy o‘quv statistikasi va quick_tasks yaratish/bajarish.
+Analitika /admin/analytics — standart manba Supabase. “Namuna” faqat alohida
+tanlansa dizayn misolini ko‘rsatadi; haqiqiy hisobot deb ko‘rsatilmaydi.
+Bosh sahifa / — Supabase’dagi nashr qilingan kurslar.
+
+RUXSATLAR
+Mavjud owner/admin/student rollari va faol/to‘xtatilgan holatlari ishlatiladi.
+Yangi rol tizimi yaratilmagan. Login, logout, callback, redirects va parolni
+tiklash arxitekturasi saqlangan. RLS o‘chirilmagan.
+Talaba to‘g‘ri javoblar va izohlarni topshirishdan oldin ololmaydi.
+Ball, student_id, rol va natija snapshoti brauzerdan ishonchli deb olinmaydi.
+Staff amallari administratorga; profil/progress o‘z akkauntiga cheklangan.
+To‘xtatilgan akkauntning bevosita o‘quv jadvali SELECTi ham cheklangan.
+SQLdagi public RPClar tekshiruvli gradexa_private funksiyalariga murojaat qiladi.
+Server actionlar Zod bilan tekshiradi; RPCning o‘zi ham ruxsat va qiymatlarni tekshiradi.
+
+MUHIM CHEGARALAR
+Takliflar saqlanadigan qoralama. Email yuborish va yangi Auth akkaunti yaratish
+bu panelga ulanmagan; tugma email jo‘natildi deb aytmaydi.
+Profilning afzal tili saqlanadi; kabinetni uch tilga tarjima qilish kiritilmadi.
+Sizning Windows/proksi/Supabase loyihangizdagi login, reset email va amaliy
+yakuniy sinovlar UNVERIFIED — ularni masofadan bajarmadim.
+Mahalliy PostgreSQL sinovi RLS/RPC va jadval yozuvlarini tekshiradi;
+Supabase Cloud yoki bir nechta haqiqiy tarmoq ulanishi testi o‘rnini bosmaydi.
+
+TEKSHIRILGAN
+TypeScript: xatosiz. Next production build: xatosiz.
+test:next: 54/54; PostgreSQL/PGlite integratsiya: 11/11.
+Qo‘shimcha DB testi tests/workspace-database.integration.mjs ichida.
+U faqat alohida o‘rnatilgan PGlite va GRADEXA_PGLITE_PATH bilan ishga tushadi;
+asosiy ilovaga yoki Windows o‘rnatishiga yangi bog‘liqlik qo‘shilmagan.
+
+ZAXIRA VA QAYTARISH
+Yangilagich avval barcha fayllarni tekshiradi, keyin gradexa-backups/data-...
+ichiga .bak nusxalarini yozadi. Bu fayllar TypeScriptga aralashmaydi.
+O‘zingiz tahrirlagan noma’lum nusxa ustidan yozilmaydi.
+Tekshirishning o‘zi: node UPDATE-GRADEXA-DATA.cjs --check
+Kod yangilanishini qaytarish (aniq zaxira yo‘lini terminaldan oling):
+node UPDATE-GRADEXA-DATA.cjs --restore gradexa-backups/data-YYYY...
+Bu faqat loyiha fayllarini qaytaradi. Supabase jadvallari yoki yozuvlarini o‘chirmaydi.
+.env va maxfiy kalitlar, node_modules, rasmlar va bank proksi sozlamalari
+yangilagich tomonidan o‘zgartirilmaydi.
+
+O‘ZGARGAN FAYLLAR
+  GRADEXA-DATA-UPDATE.sql
+  app/page.tsx
+  features/courses/course-detail.tsx
+  features/courses/course-form.tsx
+  features/courses/courses-view.tsx
+  features/courses/learning-stats.ts
+  features/courses/public-catalog.ts
+  features/courses/use-courses.ts
+  features/dashboard/dashboard-view.tsx
+  features/dashboard/report-model.ts
+  features/dashboard/report-ui.tsx
+  features/enrollments/actions.ts
+  features/enrollments/supabase-repository.ts
+  features/enrollments/use-enrollments.ts
+  features/lessons/actions.ts
+  features/lessons/legacy-import.ts
+  features/lessons/lesson-migration.tsx
+  features/lessons/supabase-repository.ts
+  features/lessons/use-lessons.ts
+  features/workspace/actions.ts
+  features/workspace/admin-lessons.tsx
+  features/workspace/admin-quizzes.tsx
+  features/workspace/admin-students.tsx
+  features/workspace/analytics.tsx
+  features/workspace/home.tsx
+  features/workspace/learning-model.ts
+  features/workspace/legacy-import.ts
+  features/workspace/lesson-reader.tsx
+  features/workspace/model.ts
+  features/workspace/profiles.tsx
+  features/workspace/settings.tsx
+  features/workspace/store.ts
+  features/workspace/student-course-view.tsx
+  features/workspace/student-pages.tsx
+  features/workspace/student-quizzes.tsx
+  features/workspace/supabase-repository.ts
+  features/workspace/ui.tsx
+  features/workspace/workspace-migration.tsx
+  package.json
+  supabase/migrations/202610020001_enrollments_data_layer.sql
+  supabase/migrations/202610020002_lessons_data_layer.sql
+  supabase/migrations/202610020003_workspace_data_layer.sql
+  tests/auth-destination.test.mjs
+  tests/courses.test.mjs
+  tests/supabase-courses.test.mjs
+  tests/supabase-enrollments.test.mjs
+  tests/supabase-lessons.test.mjs
+  tests/supabase-workspace.test.mjs
+  tests/workspace-database.integration.mjs
+  tests/workspace.test.mjs
+  tsconfig.json

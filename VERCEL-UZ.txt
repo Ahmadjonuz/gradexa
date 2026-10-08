@@ -1,0 +1,98 @@
+GRADEXA V2 — VERCEL PRODUCTION JOYLASHTIRISH
+2026-10-08
+
+TAYYORLIK
+Bu konfiguratsiya Vercel’da Framework=Next.js, Install=npm ci va
+Build=npm run build:next ni majburiy ishlatadi. package.json ichidagi eski
+Cloudflare build buyrug‘i Vercel tomonidan ishlatilmaydi.
+
+.vercelignore quyidagilarni serverga yubormaydi: .env fayllari, node_modules,
+.next, zaxiralar, updaterlar, Windows CMD o‘rnatgichlari, testlar va SQLlar.
+Supabase bazasi o‘zgarmaydi. Maxfiy qiymatlarni chatga yoki buyruq satriga
+yozmang.
+
+1. VERCEL HISOBIGA KIRISH VA LOYIHA YARATISH
+Ishlayotgan Gradexa serverini Ctrl+C bilan to‘xtating.
+VERCEL-GRADEXA-BANK.cmd faylini ikki marta bosing. Ochilgan oynada:
+
+  npx.cmd --yes vercel@latest login
+
+Brauzerda Vercel hisobiga kirib terminaldagi tasdiqni kuting. Keyin:
+
+  npx.cmd --yes vercel@latest link
+
+Savollarda:
+- Set up ...? — Y
+- Scope — o‘zingizning Vercel hisobingiz
+- Link to existing project? — N (oldin Gradexa loyihasi yaratmagan bo‘lsangiz)
+- Project name — gradexa-v2 yoki bo‘sh bo‘lmagan boshqa nom
+- Source directory — joriy gradexa papkasi, odatda .
+
+Bu faqat loyiha yozuvini yaratadi va .vercel papkasini bog‘laydi.
+
+2. PRODUCTION DOMAINNI OLISH
+Vercel Dashboard → yangi Gradexa project → Settings → Domains bo‘limini oching.
+U yerda ko‘rsatilgan asosiy manzilni yozib oling, masalan:
+
+  https://gradexa-v2-username.vercel.app
+
+Faqat o‘zingizda chiqqan aniq manzilni ishlating. Oxiriga sahifa yo‘li,
+query yoki # qo‘shmang.
+
+3. VERCEL ENVIRONMENT VARIABLES
+Vercel project → Settings → Environment Variables ichiga quyidagi 4 ta nomni
+qo‘shing. Environment sifatida hozircha Productionni belgilang:
+
+  NEXT_PUBLIC_SUPABASE_URL
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_SECRET_KEY
+  NEXT_PUBLIC_SITE_URL
+
+Birinchi uchta qiymat aynan ishlab turgan mahalliy .env.local dagi mavjud
+Gradexa/Supabase qiymatlari. NEXT_PUBLIC_SITE_URL qiymati 2-qadamdagi HTTPS
+production domain bo‘ladi. SUPABASE_SECRET_KEY ga NEXT_PUBLIC_ qo‘shmang.
+.env.local faylini Vercel’ga yuklamang va qiymatlarni chatga yubormang.
+
+4. PRODUCTION DEPLOY
+Hali ham VERCEL-GRADEXA-BANK.cmd ochgan terminalda:
+
+  npx.cmd --yes vercel@latest deploy --prod --logs
+
+Build command satrida npm run build:next ishlashi kerak. Yakunda HTTPS manzil
+chiqadi. Build xato bo‘lsa, terminaldagi birinchi xatoni yuboring; maxfiy
+qiymatlarni yubormang.
+
+5. SUPABASE AUTH URL
+Supabase Dashboard → Authentication → URL Configuration:
+
+Site URL:
+  https://SIZNING-ANIQ-VERCEL-DOMAININGIZ
+
+Redirect URLs ro‘yxatida quyidagilar bo‘lsin:
+  https://SIZNING-ANIQ-VERCEL-DOMAININGIZ/auth/callback
+  http://localhost:3000/auth/callback
+
+Save bosing. Production uchun aniq callback ishlatiladi. Keyin preview
+deploymentlar ham kerak bo‘lsa, Supabase rasmiy qoidasi bo‘yicha jamoa/account
+slugiga mos alohida Vercel wildcard qo‘shiladi; umumiy ochiq wildcard qo‘ymang.
+
+Mavjud Invite user email HTML fayli {{ .SiteURL }} orqali ishlaydi. Site URL
+production manzilga o‘zgargani uchun HTMLni qayta yuklash shart emas.
+Keyinchalik custom domain ulansa, Vercel NEXT_PUBLIC_SITE_URL, Supabase Site URL
+va Redirect URLni yangi domain bilan birga yangilang va qayta deploy qiling.
+
+6. PRODUCTION QABUL SINOVI
+Brauzerda faqat yangi HTTPS manzil orqali:
+1) owner/admin login va logout;
+2) kurs va darsni ochish/saqlash;
+3) sinov talabasiga taklif yuborish, email havolasining yangi domainni ochishi;
+4) talaba parol belgilashi, kurs/dars ko‘rishi va test topshirishi;
+5) forgot-password xatidagi havola yangi domainni ochishi;
+6) admin natijalar, vazifa tahriri va sinov yozuvini o‘chirish.
+
+Production xatolarini ko‘rish:
+  npx.cmd --yes vercel@latest logs --environment production --level error --since 10m
+
+Mahalliy loyiha ishlashda davom etadi. Localhost uchun .env.local ichidagi
+NEXT_PUBLIC_SITE_URL=http://localhost:3000 qiymatini o‘zgartirmang; Vercel
+Production qiymati Dashboard’da alohida saqlanadi.

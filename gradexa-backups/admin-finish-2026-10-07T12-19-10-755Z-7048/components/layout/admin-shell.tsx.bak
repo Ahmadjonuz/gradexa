@@ -1,0 +1,235 @@
+"use client";
+
+import { useState, type CSSProperties, type ReactNode } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Toaster } from "@/components/ui/sonner";
+import { useWorkspace } from "@/features/workspace/store";
+import {
+  LayoutDashboard,
+  BookOpen,
+  PlayCircle,
+  ClipboardList,
+  Award,
+  Users,
+  ChartNoAxesCombined,
+  Settings,
+  Search,
+  Bell,
+  ArrowUpRight,
+  ShieldCheck,
+} from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { GradexaLogo } from "@/components/brand/gradexa-logo";
+import { LogoutButton } from "@/components/auth/logout-button";
+import { CommandPalette } from "@/features/dashboard/command-palette";
+import { type Detail } from "@/lib/data/dashboard";
+import type { GradexaProfile } from "@/lib/auth";
+import "@/features/dashboard/admin-pages.css";
+
+const navigation: {
+  label: string;
+  icon: typeof LayoutDashboard;
+  href?: string;
+}[] = [
+  { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+  { label: "Kurslar", icon: BookOpen, href: "/admin/courses" },
+  { label: "Darslar", icon: PlayCircle, href: "/admin/lessons" },
+  { label: "Testlar", icon: ClipboardList, href: "/admin/quizzes" },
+  { label: "Natijalar", icon: Award, href: "/admin/quiz-results" },
+  { label: "Talabalar", icon: Users, href: "/admin/students" },
+  { label: "Analitika", icon: ChartNoAxesCombined, href: "/admin/analytics" },
+  { label: "Sozlamalar", icon: Settings, href: "/admin/settings" },
+];
+function AdminNavigation({ onSoon }: { onSoon: (detail: Detail) => void }) {
+  const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
+  return (
+    <SidebarMenu>
+      {navigation.map(({ label, icon: Icon, href }) => (
+        <SidebarMenuItem key={label}>
+          {href ? (
+            <SidebarMenuButton
+              asChild
+              className="h-11 px-3 text-sm"
+              isActive={
+                href === "/admin"
+                  ? pathname === href
+                  : pathname.startsWith(href)
+              }
+            >
+              <Link href={href} onClick={() => setOpenMobile(false)}>
+                <Icon />
+                <span>{label}</span>
+              </Link>
+            </SidebarMenuButton>
+          ) : (
+            <SidebarMenuButton
+              className="h-11 px-3 text-sm"
+              onClick={() => {
+                setOpenMobile(false);
+                onSoon({
+                  title: label,
+                  description:
+                    "Bu bo‘lim keyingi qadamda ulanadi. Dashboard va kurslarni boshqarish hozir mavjud.",
+                });
+              }}
+            >
+              <Icon />
+              <span>{label}</span>
+              <span className="ml-auto text-xs text-muted-foreground">
+                Soon
+              </span>
+            </SidebarMenuButton>
+          )}
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+}
+export function AdminShell({
+  children,
+  profile,
+}: {
+  children: ReactNode;
+  profile: GradexaProfile;
+}) {
+  const w = useWorkspace();
+  const pathname = usePathname();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [detail, setDetail] = useState<Detail | null>(null);
+  const reportPage = pathname === "/admin" || pathname === "/admin/analytics" || pathname.startsWith("/admin/quiz-results") || pathname.startsWith("/admin/quizzes") || pathname === "/admin/settings" || pathname.startsWith("/admin/courses") || pathname.startsWith("/admin/students") || pathname.startsWith("/admin/lessons");
+  return (
+    <SidebarProvider
+      className={[w.data.preferences.compact ? "compact-tables" : "", reportPage ? "gx-admin" : ""].filter(Boolean).join(" ")}
+      style={{ "--sidebar-width": "230px" } as CSSProperties}
+    >
+      <a href="#main-content" className="skip-link">
+        Asosiy kontentga o‘tish
+      </a>
+      <Sidebar className="border-r border-border">
+        <SidebarHeader className="px-6 py-7">
+          <GradexaLogo />
+          <span className="workspace-label">LEARNING WORKSPACE</span>
+        </SidebarHeader>
+        <SidebarContent className="px-3 pt-4">
+          <p className="nav-caption">BOSHQARUV</p>
+          <AdminNavigation onSoon={setDetail} />
+          <div className="workspace-note">
+            <ShieldCheck size={21} />
+            <strong>O‘sish shu yerdan boshlanadi.</strong>
+            <p>Bilim. Natija. Yangi imkoniyatlar.</p>
+            <span>
+              GRADEXA / V2 <ArrowUpRight size={14} />
+            </span>
+          </div>
+        </SidebarContent>
+        <SidebarFooter className="border-t border-border p-4">
+          <button
+            className="profile-button"
+            onClick={() =>
+              setDetail({
+                title: profile.full_name,
+                description: `${profile.bio || w.data.preferences.ownerBio} · ${profile.role === "owner" ? "Owner" : "Administrator"}.`,
+              })
+            }
+          >
+            <span className="avatar">{profile.initials}</span>
+            <span>
+              <strong>{profile.full_name}</strong>
+              <small>{profile.role === "owner" ? "Owner" : "Administrator"}</small>
+            </span>
+            <ArrowUpRight size={16} />
+          </button>
+        </SidebarFooter>
+        <LogoutButton className="px-5 pb-5" />
+      </Sidebar>
+      <SidebarInset className="min-w-0 bg-background">
+        <header className="topbar">
+          <div className="topbar-path">
+            <SidebarTrigger aria-label="Menyuni ochish yoki yopish" />
+            <span>Workspace</span>
+            <span className="slash">/</span>
+            <strong>
+              {navigation.find(
+                (n) =>
+                  n.href !== "/admin" && n.href && pathname.startsWith(n.href),
+              )?.label ?? "Dashboard"}
+            </strong>
+          </div>
+          <div className="topbar-actions">
+            <span className="demo-badge">Himoyalangan kirish</span>
+            <button
+              className="icon-button"
+              aria-label="Qidirish (Ctrl yoki Cmd K)"
+              title="Qidirish · Ctrl / Cmd + K"
+              onClick={() => setSearchOpen(true)}
+            >
+              <Search size={19} />
+            </button>
+            {reportPage && <span className="topbar-language" lang="uz" title="Sahifa tili: O‘zbekcha">UZ</span>}
+            <button
+              className="icon-button"
+              aria-label="Bildirishnomalar"
+              onClick={() =>
+                setDetail({
+                  title: "Bildirishnomalar",
+                  description: `${w.data.students.filter((s) => s.status === "invited").length} ta taklif kutilmoqda. ${w.data.attempts.length} ta test urinishi mavjud.`,
+                })
+              }
+            >
+              <Bell size={19} />
+              {reportPage && w.data.preferences.showNotifications && w.data.students.some(s => s.status === "invited") && <span className="gx-notification-dot" />}
+            </button>
+            <span className="topbar-avatar" aria-label={profile.full_name}>
+              {profile.initials}
+            </span>
+          </div>
+        </header>
+        <main id="main-content" tabIndex={-1} className="dashboard-main">
+          {children}
+        </main>
+        <footer className="app-footer">
+          <span>Gradexa © 2026</span>
+          <span>Learning, elevated.</span>
+        </footer>
+      </SidebarInset>
+      <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
+      <Toaster theme="dark" richColors position="bottom-right" />
+      <Dialog
+        open={detail !== null}
+        onOpenChange={(open) => {
+          if (!open) setDetail(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{detail?.title}</DialogTitle>
+            <DialogDescription className="pt-3 leading-7">
+              {detail?.description}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </SidebarProvider>
+  );
+}

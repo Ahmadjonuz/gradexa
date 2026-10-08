@@ -1,0 +1,65 @@
+"use client";
+
+import { useState } from "react";
+import { Users, Clock3, CircleCheck, Headphones, CalendarDays, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useWorkspace } from "./store";
+import { WorkspaceGate } from "./ui";
+import { CourseTable, Funnel, Heatmap, Metrics, Panel, ReportSelect, TrendChart } from "@/features/dashboard/report-ui";
+import { localReport, reportCsv, sampleCourses, sampleFunnel, sampleHeatmap, sampleTrend } from "@/features/dashboard/report-model";
+import { reportDate } from "@/lib/report-time";
+
+export function Analytics() {
+  const w = useWorkspace();
+  const [source, setSource] = useState("supabase");
+  const [period, setPeriod] = useState("30");
+  const [sort, setSort] = useState("students");
+  const [endDate, setEndDate] = useState(() => reportDate());
+  const [exported, setExported] = useState(false);
+  const demo = source === "sample";
+  const local = localReport(w.data, w.courses, endDate, Number(period));
+  const trend = demo ? sampleTrend.slice(-Number(period)) : local.trend;
+  const courses = [...(demo ? sampleCourses : local.courses)].sort((a, b) => sort === "progress" ? b.progress - a.progress : sort === "name" ? a.name.localeCompare(b.name) : b.students - a.students);
+  const range = `${trend[0]?.date ?? endDate} — ${trend.at(-1)?.date ?? endDate}`;
+  function changeSource(value: string) {
+    setSource(value);
+    setEndDate(value === "sample" ? "2026-09-30" : reportDate());
+    setExported(false);
+  }
+  function download() {
+    const csv = reportCsv(demo ? "Namuna hisobot" : "Supabase ma’lumotlari", trend, courses, demo ? "Darsga kirganlar" : "Test urinishlari");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `gradexa-${source}-${endDate}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setExported(true);
+  }
+  const view = <div className="gx-report gx-analytics">
+    <section className="gx-welcome gx-analytics-welcome"><div><h1>Platforma analitikasi</h1><p>O‘sish, faollik va natijalar haqida to‘liq ma’lumot</p></div>
+      <div className="gx-heading-actions"><span className="gx-date-range"><CalendarDays size={16} />{range}</span><Button className="gx-export" onClick={download}><Download size={16} />Eksport</Button></div>
+    </section>
+    <div className="gx-source-toolbar"><ReportSelect label="Hisobot ma’lumotlari manbasi" value={source} onChange={changeSource} items={[{ value: "sample", label: "Namuna hisobot" }, { value: "supabase", label: "Supabase ma’lumotlari" }]} /><p>{demo ? "2026-yil sentabr · dizayn namunasi" : "Supabase’da saqlangan yozuvlar"}</p><span role="status" className="gx-export-status">{exported ? "CSV fayli tayyorlandi." : ""}</span></div>
+    <Metrics compact items={[
+      { label: demo ? "Faol talabalar" : "Test topshirgan talabalar", value: demo ? "198" : String(local.active), icon: Users, change: demo ? "+14%" : undefined },
+      { label: "Tugallangan darslar", value: demo ? "1,286" : String(local.completions), icon: Clock3, change: demo ? "+28%" : undefined, note: demo ? undefined : "Barcha vaqt" },
+      { label: "Test urinishlari", value: demo ? "142" : String(local.attempts), icon: CircleCheck, change: demo ? "+16%" : undefined },
+      { label: "O‘rtacha natija", value: demo ? "76.4%" : local.score, icon: Headphones, change: demo ? "+6%" : undefined },
+    ]} />
+    <div className="gx-grid gx-analytics-charts">
+      <Panel title="Faollik dinamikasi" controls={<ReportSelect label="Grafik va test hisoboti davri" value={period} onChange={value => { setPeriod(value); setExported(false); }} items={[{ value: "30", label: "Oxirgi 30 kun" }, { value: "14", label: "Oxirgi 14 kun" }, { value: "7", label: "Oxirgi 7 kun" }]} />}>
+        <TrendChart data={trend} activityLabel={demo ? "Darsga kirganlar" : "Test urinishlari"} />
+      </Panel>
+      <Panel title="O‘quv jarayoni konvertatsiyasi"><Funnel steps={demo ? sampleFunnel : local.funnel} />{!demo && <p className="gx-hint">Talabalarning jami holati · barcha vaqt</p>}</Panel>
+    </div>
+    <div className="gx-grid gx-analytics-lower">
+      <Panel title="Talabalar faolligi (kunlar bo‘yicha)" className="gx-heatmap-panel"><Heatmap values={demo ? sampleHeatmap : local.heatmap} /></Panel>
+      <Panel title="Kurslar bo‘yicha taqqoslash" controls={<ReportSelect label="Kurslarni saralash" value={sort} onChange={setSort} items={[{ value: "students", label: "Talabalar soni" }, { value: "progress", label: "Yakunlash darajasi" }, { value: "name", label: "Kurs nomi" }]} />}><CourseTable courses={courses} linkCourses={!demo} /></Panel>
+    </div>
+    <p className="gx-report-source"><span />{demo ? "Namuna raqamlari. Davr filtri chiziqli grafikni o‘zgartiradi; kartalar sentabr yakunini ko‘rsatadi." : "Davr filtri test urinishlari, faol talabalar, o‘rtacha natija va soatlik faollikka qo‘llanadi. Kurslar va dars yakunlari — barcha vaqt."}</p>
+  </div>;
+  return demo ? view : !w.ready || w.error ? <div className="gx-report"><Button variant="outline" onClick={() => changeSource("sample")} className="mb-4">Namuna hisobotga qaytish</Button><WorkspaceGate workspace={w}>{view}</WorkspaceGate></div> : view;
+}

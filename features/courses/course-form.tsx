@@ -1,0 +1,96 @@
+"use client";
+import { useEffect, useState, useRef, type FormEvent } from "react";
+import { Save, Upload, Send } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Choice } from "@/features/workspace/ui";
+import { courseInputSchema, levelLabels, statusLabels, type Course, type CourseInput } from "./model";
+import { saveCourse } from "./use-courses";
+import { courseCover, courseArtwork } from "./course-art";
+import { StatusBadge } from "./course-shared";
+import "./learning-pages.css";
+import { useUnsavedChanges } from "@/hooks/use-unsaved-changes";
+
+export function CourseForm({ course, onSaved, onCancel, onStateChange }: { course?: Course; onSaved: (course: Course) => void; onCancel: () => void; onStateChange?: (state: { busy: boolean; dirty: boolean }) => void }) {
+  const [input, setInput] = useState<CourseInput>(course ?? { title: "", category: "", description: "", level: "beginner", status: "draft", language: "uz", sequential: true });
+  const [errors, setErrors] = useState<Partial<Record<keyof CourseInput, string>>>({});
+  const [saveError, setSaveError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const original = useRef(JSON.stringify(input));
+  const dirty = JSON.stringify(input) !== original.current;
+  useUnsavedChanges(dirty);
+  useEffect(() => { onStateChange?.({ busy: saving || uploading, dirty }); }, [saving, uploading, dirty, onStateChange]);
+  const submitting = useRef(false);
+  const editVersion = useRef(course ? { id: course.id, updatedAt: course.updatedAt } : undefined);
+  function field<K extends keyof CourseInput>(key: K, value: CourseInput[K]) {
+    setInput(previous => ({ ...previous, [key]: value }));
+    setErrors(previous => ({ ...previous, [key]: undefined }));
+    setSaveError("");
+  }
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (submitting.current || uploading) return;
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const result = courseInputSchema.safeParse({ ...input, status: submitter?.value || input.status });
+    if (!result.success) {
+      const issues: Partial<Record<keyof CourseInput, string>> = {};
+      result.error.issues.forEach(issue => { issues[issue.path[0] as keyof CourseInput] = issue.message; });
+      setErrors(issues);
+      document.getElementById("course-" + result.error.issues[0].path[0])?.focus();
+      return;
+    }
+    submitting.current = true; setSaving(true); setSaveError("");
+    try {
+      const saved = await saveCourse(result.data, editVersion.current);
+      if (!saved.ok) { setSaveError(saved.message); return; }
+      toast.success("Kurs Supabase’da saqlandi.");
+      onSaved(saved.course);
+    } finally { submitting.current = false; setSaving(false); }
+  }
+  async function upload(file?: File) {
+    if (!file || submitting.current || uploading) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      setErrors(previous => ({ ...previous, coverImage: "PNG, JPG yoki WEBP tanlang. Hajmi 5 MB dan oshmasin." })); return;
+    }
+    setUploading(true);
+    const url = URL.createObjectURL(file);
+    try {
+      const image = new Image(); image.src = url; await image.decode();
+      const canvas = document.createElement("canvas"), scale = Math.min(1, 1000 / image.width, 700 / image.height);
+      canvas.width = Math.round(image.width * scale); canvas.height = Math.round(image.height * scale);
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error();
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const data = canvas.toDataURL("image/webp", .8);
+      if (data.length > 800000) throw new Error();
+      field("coverImage", data);
+    } catch { setErrors(previous => ({ ...previous, coverImage: "Rasmni yuklab bo‘lmadi. Kichikroq rasm tanlang." })); }
+    finally { URL.revokeObjectURL(url); setUploading(false); }
+  }
+  const error = (key: keyof CourseInput) => errors[key] && <p id={"course-error-" + key} role="alert" className="field-error">{errors[key]}</p>;
+  return <form onSubmit={submit} className="gc-form gc-page" noValidate aria-busy={saving || uploading}><fieldset disabled={saving || uploading} className="contents">
+    <div className="form-actions"><Button type="button" variant="outline" onClick={onCancel}>Bekor qilish</Button><Button variant="outline" type="submit" value="draft" disabled={uploading}><Save size={17} />Qoralama saqlash</Button><Button type="submit" value={course ? input.status : "published"} disabled={uploading}><Send size={17} />{course ? "O‘zgarishlarni saqlash" : "Nashr qilish"}</Button></div>
+    {saveError && <p className="storage-error" role="alert">{saveError}</p>}
+    <div className="gc-form-grid"><div><section className="ga-panel"><h2>Asosiy ma’lumotlar</h2>
+      <label className="form-field" htmlFor="course-title">Kurs nomi *
+        <Input autoFocus id="course-title" value={input.title} maxLength={100} placeholder="Masalan, Frontend Foundations" onChange={e => field("title", e.target.value)} aria-invalid={!!errors.title} aria-describedby={errors.title ? "course-error-title" : undefined} required />{error("title")}
+      </label>
+      <label className="form-field" htmlFor="course-description">Kurs tavsifi *
+        <Textarea id="course-description" value={input.description} rows={5} maxLength={1500} placeholder="Kurs mazmuni va o‘rganish natijalarini yozing…" onChange={e => field("description", e.target.value)} aria-invalid={!!errors.description} aria-describedby={errors.description ? "course-error-description" : undefined} required /><span className="form-hint">{input.description.length}/1500 belgi</span>{error("description")}
+      </label>
+      <div className="course-form-grid"><label className="form-field" htmlFor="course-category">Yo‘nalish *
+        <Input id="course-category" value={input.category} maxLength={60} placeholder="Dasturlash" onChange={e => field("category", e.target.value)} required aria-invalid={!!errors.category} />{error("category")}
+      </label><Choice label="Daraja" disabled={saving || uploading} value={input.level} onChange={v => field("level", v as CourseInput["level"])} items={Object.entries(levelLabels).map(([value, label]) => ({ value, label }))} /></div>
+      <div className="course-form-grid"><Choice label="Kurs tili" disabled={saving || uploading} value={input.language ?? "uz"} onChange={v => field("language", v as CourseInput["language"])} items={[{ value: "uz", label: "O‘zbekcha" }, { value: "en", label: "English" }, { value: "ru", label: "Русский" }]} /><Choice label="Holat" disabled={saving || uploading} value={input.status} onChange={v => field("status", v as CourseInput["status"])} items={Object.entries(statusLabels).map(([value, label]) => ({ value, label }))} /></div>
+      <label className="gc-toggle-label"><Switch disabled={saving || uploading} checked={input.sequential ?? false} onCheckedChange={v => field("sequential", v)} /><span>Darslarni ketma-ket ochish<br /><span className="form-hint">Keyingi dars avvalgi darslar yakunlangach ochiladi.</span></span></label>
+    </section><section className="ga-panel"><h2>Kurs muqovasi</h2><img className="gc-cover-large" src={courseCover(input)} alt="Tanlangan kurs muqovasi" />
+      <div className="gc-cover-picker">{courseArtwork.map(art => <button type="button" key={art.value} aria-label={art.label + " muqovasi"} aria-pressed={courseCover(input) === art.value} onClick={() => field("coverImage", art.value)}><img src={art.value} alt="" width="150" height="90" /></button>)}</div>
+      <label className="form-field" htmlFor="course-coverImage"><span className="flex items-center gap-2"><Upload size={16} />O‘z rasmingizni yuklang</span><Input type="file" id="course-coverImage" accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={e => { void upload(e.target.files?.[0]); e.target.value = ""; }} /><span className="form-hint">{uploading ? "Rasm tayyorlanmoqda…" : "PNG, JPG, WEBP · 5 MB gacha. Rasm saqlash uchun kichraytiriladi."}</span>{error("coverImage")}</label>
+    </section></div>
+    <aside className="gc-live-preview"><h2 className="gc-preview-title">Jonli ko‘rinish</h2><article className="gc-card"><div className="gc-cover"><img src={courseCover(input)} alt="" /><StatusBadge status={input.status} /></div><div className="gc-card-body"><h2>{input.title || "Yangi kurs nomi"}</h2><p>{input.description || "Kurs haqida kiritgan ma’lumotlaringiz shu yerda ko‘rinadi."}</p><div className="gc-card-meta"><span>{input.category || "Yo‘nalish"}</span><span>{levelLabels[input.level]}</span></div></div></article><p className="gc-publish-note">Kurs, darslar va testlar Supabase’da saqlanadi. “Nashr qilish” kursni talaba katalogida ko‘rsatadi.</p></aside></div>
+  </fieldset></form>;
+}

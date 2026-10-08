@@ -1,0 +1,119 @@
+GRADEXA V2 — ADMIN, FORMALAR VA TIKLANISH YANGILANISHI
+2026-10-07
+
+Bu yangi loyiha emas. Avval o‘rnatilgan STUDY-FLOW yangilanishidan keyingi paket.
+Supabase, login, rollar, RLS, takliflar va mavjud ma’lumotlar almashtirilmaydi.
+SQL ishlatmang. Kutubxonalar o‘zgarmagan: npm install qayta kerak emas.
+
+O‘RNATISH (Windows, bitta mavjud gradexa papkasiga)
+1. Ishlab turgan server oynasida Ctrl+C bosing.
+2. UPDATE-GRADEXA-ADMIN-FINISH.cjs faylini package.json yoniga joylang.
+3. Shu papkada CMD oching va bajaring:
+   node UPDATE-GRADEXA-ADMIN-FINISH.cjs --check
+   Tekshiruv xatosiz bo‘lsa:
+   node UPDATE-GRADEXA-ADMIN-FINISH.cjs
+4. Har biri xatosiz tugagach keyingisini bajaring:
+   npm.cmd run typecheck
+   npm.cmd run test:next
+   npm.cmd run build:next
+5. Oldin ishlagan START-GRADEXA-BANK.cmd yoki START-GRADEXA.cmd orqali oching.
+   Proksi kerak bo‘lmasa: npm.cmd run dev:next
+
+Yangilagich barcha mosliklarni yozishdan OLDIN tekshiradi. Siz o‘zgartirgan
+fayl farq qilsa, hech birini almashtirmaydi. Xato chiqsa, majburlamang:
+fayllar ro‘yxatini yuboring. .env, node_modules va SQLga tegmaydi.
+Avtomatik zaxira: gradexa-backups/admin-finish-<sana-vaqt>.
+Qaytarish: serverni to‘xtatib, terminal ko‘rsatgan aniq zaxira yo‘li bilan:
+node UPDATE-GRADEXA-ADMIN-FINISH.cjs --restore gradexa-backups/admin-finish-<aniq-nom>
+Bu faqat loyiha fayllarini qaytaradi; bazadagi yozuvlarni o‘chirmaydi.
+Qaytargandan so‘ng build:next ni qayta bajaring.
+
+NIMA O‘ZGARDI VA QAYSI FAYLLARDA
+
+Qidiruv va navigatsiya:
+- features/dashboard/command-palette.tsx: haqiqiy talabalardagi “namuna”
+  yorlig‘i olib tashlandi; darslar, testlar va kurs nomi bo‘yicha qidiruv.
+  Adminni student roliga yuboradigan yaroqsiz amal o‘rniga yangi test amali.
+- components/layout/admin-shell.tsx: bildirishnomalardan taklif va natijalarga
+  ishlaydigan havolalar.
+- app/admin/students/page.tsx va features/workspace/admin-students.tsx:
+  /admin/students?status=invited to‘g‘ridan-to‘g‘ri taklif filtrini ochadi;
+  noma’lum URL filtri “Barchasi”ga qaytadi. Saqlashda holat tanlash bloklanadi.
+- components/layout/student-shell.tsx: saqlangan profil ismi, bosh harflari
+  va rasmi joriy ma’lumotdan olinadi. Dars sahifasida kurs menyusi faol.
+  Yopiq dars qidiruvda qulf bilan ko‘rsatiladi, kurs dasturiga olib boradi.
+- features/workspace/admin-tools.ts: tartib, filtr va qidiruv qoidalari.
+
+Dars muharriri:
+- features/workspace/admin-lessons.tsx: kurs/moduldagi navbatdagi bo‘sh
+  tartib, takroriy tartibni oldindan aniqlash, holat filtri, 10 tadan sahifalash.
+  Serverdagi mavjud UNIQUE/RLS tekshiruvlari saqlanadi — brauzer tekshiruvi
+  ularning o‘rnini bosmaydi. Yozishning bir vaqtning o‘zida takrorlanishi
+  bloklanadi. Xatoda forma qiymatlari saqlanadi.
+
+Formalar:
+- features/workspace/admin-quizzes.tsx: saqlash vaqtida savollar/variantlar,
+  tanlovlar, nashr holati va bekor qilish bloklanadi; takroriy yuborish himoyasi.
+- features/workspace/profiles.tsx: profil rasmini tayyorlash yoki saqlash
+  tugamaguncha formani o‘zgartirish va qayta yuborish bloklanadi.
+- features/workspace/settings.tsx: saqlashda maydonlar va tablar bloklanadi;
+  “Saqlanmoqda” holati; takliflar havolasi tegishli filtrga olib boradi.
+- features/workspace/lesson-reader.tsx: qayd saqlanayotganda matn bloklanadi.
+- features/courses/course-form.tsx: rasm tayyorlash/saqlashdagi tanlovlar
+  bloklanadi; testlar “brauzerda saqlanadi” degan eskirgan matn tuzatildi.
+- features/courses/course-shared.tsx: statistikani Supabase ma’lumotlari
+  asosida hisoblash haqida to‘g‘ri izoh.
+- features/workspace/ui.tsx: umumiy Choice komponentida disabled qo‘llovi.
+- hooks/use-unsaved-changes.ts: dars va test muharririda yangilash/oynani
+  yopish hamda muharrirning Bekor qilish/Orqaga tugmalarida ogohlantirish.
+  Bu barcha sidebar havolalari yoki brauzer Back tugmasini to‘sadigan global
+  himoya emas. Qoralamalar localStoragega avtomatik saqlanmaydi.
+
+Sahifa yuklanishi va kutilmagan xatolar:
+- components/layout/route-error.tsx: maxfiy tafsilotlarni ko‘rsatmaydigan
+  xato ekrani, qayta urinish va rolga mos bosh sahifa havolasi.
+- components/layout/route-loading.tsx: ekran o‘quvchisi uchun ham loading.
+- app/error.tsx, app/admin/error.tsx, app/student/error.tsx.
+- app/loading.tsx, app/admin/loading.tsx, app/student/loading.tsx.
+  Bu sahifa xatolarini ushlaydi; forma/server xatolari o‘z xabarlari orqali
+  ko‘rsatiladi. Root layout uchun global-error bu paketga kiritilmagan.
+
+Testlar:
+- tests/admin-tools.test.mjs: 8 ta qoida testi.
+- tests/admin-render.test.mjs: 8 ta render/navigatsiya fixture testi.
+- package.json: yangi testlar mavjud test:next ro‘yxatiga qo‘shildi.
+  Kutubxona versiyalari va package-lock.json o‘zgarmadi.
+
+STORAGE / DATABASE HISOBOTI
+Kurslar, darslar, testlar, talabalar, profil, qayd va sozlamalar:
+oldin — mavjud Supabase; keyin — aynan o‘sha Supabase.
+Bu paket yangi SELECT/INSERT/UPDATE/DELETE mexanizmini qo‘shmaydi.
+Mavjud saveCourse, saveLesson, saveWorkspace va server actionlar qayta ishlatiladi.
+Jadvallar: courses, lessons, profiles, enrollments, quizzes, quiz_questions,
+quiz_attempts, lesson_progress, workspace_settings, student_invitation_drafts
+hamda mavjud qayd saqlash mexanizmi o‘zgartirilmaydi.
+RLS: o‘zgarmadi. Eski localStorage ko‘chirish vositalari o‘chirilmadi.
+
+WINDOWSDA YAKUNIY QABUL SINOVI
+1. Admin: Ctrl+K orqali haqiqiy kurs, dars va testni topib oching.
+   Qo‘ng‘iroq -> Takliflarni ko‘rish: taklif tabida ochilishi kerak.
+2. /admin/lessons: yangi darsni saqlang, tahrirlang, yangilang va qayta oching.
+   Bitta kurs/modulda bir xil tartib kiritsangiz tushunarli xabar chiqsin.
+   Qoralama/Nashr filtri va sahifalashni tekshiring.
+3. /admin/quizzes/new va mavjud test: savol, to‘g‘ri javob, nashr holatini
+   saqlang. Saqlanmagan o‘zgarish bilan “Testlarga qaytish”ni bosing:
+   tasdiqlash chiqsin. Saqlangan test studentda to‘g‘ri ko‘rinsin.
+4. Student: profilingizni saqlang — yon menyu ismi/rasmi yangilansin.
+   Ketma-ket kursdagi yopiq dars qidiruvdan kurs dasturini ochsin.
+   Darsni yakunlang, test topshiring, natijani sahifa yangilab tekshiring.
+5. Telefon/kichik oynada menyu, forma va jadvallarni tekshiring.
+
+Tekshiruv doirasi: lokal TypeScript/test/build va izolyatsiyalangan SQL
+testlari haqiqiy Windows brauzeri yoki jonli Supabase tekshiruvining o‘rnini
+bosmaydi. Yangi formalar bilan real saqlash, mobil ko‘rinish va tarmoq uzilib
+qaytgandagi holatlar sizning muhitda tekshirilishi kerak. Avvalgi screenshotlar
+bu bosqichda mavjud emas: dizayn qayta yaratilmagan, mavjud dizayn saqlangan.
+
+Keyingi bitta qadam: yuqoridagi Windows qabul sinovini bajarish.
+Undan keyin Vercel domeni, Supabase Site URL/Redirect URLs, email havolalari
+va production muhitini alohida tekshirish mumkin. Joylashtirish bajarilmadi.

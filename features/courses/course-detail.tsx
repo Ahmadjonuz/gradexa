@@ -1,0 +1,40 @@
+"use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { CourseForm } from "./course-form";
+import { levelLabels } from "./model";
+import { useWorkspace } from "@/features/workspace/store";
+import { CourseEmpty, CourseLoading, StatusBadge, StorageError } from "./course-shared";
+import { AccountPanel } from "@/features/workspace/account-ui";
+import { LessonCurriculum } from "@/features/workspace/lesson-curriculum";
+import { courseCover } from "./course-art";
+import { formatDate } from "@/features/workspace/account-utils";
+import "./learning-pages.css";
+import { DeleteRecordButton } from "@/features/deletions/delete-record-button";
+
+export function CourseDetail({ courseId, initialEdit = false }: { courseId: string; initialEdit?: boolean }) {
+  const router = useRouter();
+  const [formStatus, setFormStatus] = useState({ busy: false, dirty: false });
+  const { courses, ready, error, data } = useWorkspace();
+  const [editing, setEditing] = useState(initialEdit);
+  function closeEditor() {
+    if (formStatus.busy) return;
+    if (formStatus.dirty && !window.confirm("Saqlanmagan o‘zgarishlar bor. Saqlamasdan chiqasizmi?")) return;
+    setEditing(false);
+  }
+  if (!ready) return <CourseLoading />;
+  if (error) return <StorageError message={error} />;
+  const course = courses.find(item => item.id === courseId);
+  if (!course) return <CourseEmpty title="Kurs topilmadi" description="Bu kurs bazada topilmadi yoki sizga ko‘rinmaydi."><Button asChild><Link href="/admin/courses">Kurslarga qaytish</Link></Button></CourseEmpty>;
+  const lessons = data.lessons.filter(l => l.courseId === courseId);
+  return <div className="ga-page gc-page"><Link href="/admin/courses" className="ga-back"><ArrowLeft size={16} />Kurslarga qaytish</Link>
+    <section className="gc-hero"><div className="gc-hero-copy"><p className="gc-eyebrow">{course.category}</p><h1>{course.title}</h1><p>{course.description}</p><div className="gc-hero-actions"><StatusBadge status={course.status} /><Button variant="outline" onClick={() => setEditing(true)}><Pencil size={16} />Tahrirlash</Button><DeleteRecordButton kind="course" id={course.id} name={course.title} onDeleted={() => router.push("/admin/courses")} /></div></div><img src={courseCover(course)} className="gc-hero-art" alt="" width="650" height="400" /></section>
+    <div className="gc-content-grid"><AccountPanel title="Darslar va modullar" action={<Button size="sm" asChild variant="outline"><Link href="/admin/lessons"><Plus size={16} />Darslarni boshqarish</Link></Button>}>{lessons.length ? <LessonCurriculum lessons={lessons} admin /> : <div className="ga-empty"><h3>Hali dars qo‘shilmagan</h3><p>Darslar bo‘limida shu kursni tanlab, birinchi darsni yarating.</p><Button asChild><Link href="/admin/lessons">Dars yaratish</Link></Button></div>}</AccountPanel>
+    <aside className="gc-side-stack"><AccountPanel title="Kurs ma’lumotlari"><dl className="gc-facts"><dt>Talabalar</dt><dd>{course.students}</dd><dt>Darslar</dt><dd>{lessons.length}</dd><dt>Daraja</dt><dd>{levelLabels[course.level]}</dd><dt>Yakunlanish</dt><dd>{course.progress}%</dd><dt>Yangilangan</dt><dd>{formatDate(course.updatedAt)}</dd><dt>Ketma-ket ochish</dt><dd>{course.sequential ? "Yoqilgan" : "O‘chirilgan"}</dd></dl></AccountPanel><AccountPanel title="Kurs testlari"><p className="gc-footnote">{data.quizzes.filter(q => q.courseId === courseId).length} ta test mavjud.</p><Button variant="outline" asChild><Link href="/admin/quizzes">Testlarni boshqarish</Link></Button></AccountPanel></aside></div><p className="ga-footnote">Kurs, darslar, testlar va o‘quv progressi Supabase’da saqlanadi.</p>
+    <Dialog open={editing} onOpenChange={open => { if (!open) closeEditor(); }}><DialogContent className="ga-page max-h-[92dvh] overflow-y-auto sm:max-w-5xl"><DialogHeader><DialogTitle>Kursni tahrirlash</DialogTitle><DialogDescription>Ma’lumotlar, muqova va darslarni ochish tartibi.</DialogDescription></DialogHeader>{editing && <CourseForm key={course.id} course={course} onSaved={() => setEditing(false)} onCancel={closeEditor} onStateChange={setFormStatus} />}</DialogContent></Dialog>
+  </div>;
+}

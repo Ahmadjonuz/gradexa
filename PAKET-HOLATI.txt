@@ -1,0 +1,39 @@
+GRADEXA V2 — TO‘LIQ PAKET HOLATI
+Paket sanasi: 2026-10-06
+
+KIRITILGAN
+- Next.js 16.2.6 / React 19.2.6 / TypeScript 5.9.3 manba kodi.
+- 29 ta App Router sahifasi, umumiy komponentlar va barcha public rasmlar.
+- Supabase Auth: login, logout, callback, safe redirect, forgot/reset password.
+- Owner/admin/student rollari va himoyalangan yo‘llar.
+- Supabase: courses, lessons, enrollments, lesson_progress, profiles,
+  quizzes, quiz_questions, quiz_attempts, settings, tasks va takliflar.
+- Admin va student ish maydonlari, CRUD, qidiruv, filtr, nashr, baholash.
+- Admin orqali haqiqiy talaba taklifi, parol o‘rnatish va kurs biriktirish.
+- SQL migratsiyalar, eski brauzer ma’lumotlarini xavfsiz ko‘chirish vositalari.
+- Windows oddiy va bank proksi o‘rnatish/ishga tushirish fayllari.
+
+TEKSHIRILGAN
+- npm run typecheck: PASS.
+- npm run test:next: 62/62 PASS.
+- npm run build:next: PASS.
+- Eski workspace PostgreSQL integratsiyasi: 11/11 PASS.
+- Takliflar PostgreSQL integratsiyasi: 8/8 PASS.
+- Taklif yangilagichi: apply, backup, repeat, restore, fayl farqi,
+  yarim yozilishdan rollback va Windows CRLF: PASS.
+- Yangilagich o‘rnatilgan alohida loyiha nusxasida typecheck/test/build: PASS.
+- Foydalanuvchi Windows muhitida oldingi data yangilanishi, build/test,
+  student login va biriktirilgan darslar ko‘rinishi: tasdiqlangan.
+
+FOYDALANUVCHI MUHITIDA TEKSHIRILADIGAN QISM
+- Yangi admin taklifining haqiqiy SMTP orqali emailga yetib borishi.
+- Email havolasi → parol → login → tanlangan kurs oqimi.
+- Bank tarmog‘idan Supabase Auth email va callback manziliga kirish.
+
+PAKETDAN ATAYLAB CHIQARILGAN
+- node_modules, .next, tsconfig.tsbuildinfo va boshqa qayta yaratiladigan keshlar.
+- .env.local, parollar, tokenlar va Supabase kalitlari.
+- Supabase bazasining yozuvlari va brauzer localStorage tarkibi.
+
+Bog‘liqliklarning aniq versiyalari package-lock.jsonda. INSTALL-UZ.cmd yoki
+INSTALL-GRADEXA-BANK.cmd npm.cmd ci orqali ularni qayta o‘rnatadi.

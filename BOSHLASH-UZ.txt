@@ -1,0 +1,87 @@
+GRADEXA V2 — WINDOWSDA TO‘LIQ O‘RNATISH VA ISHGA TUSHIRISH
+To‘liq paket: 2026-10-06
+
+BU ZIP ICHIDA NIMA BOR
+- Gradexa V2 ning hozirgi to‘liq manba kodi va barcha sahifalari.
+- Supabase Auth, rollar, himoyalangan yo‘llar va parol tiklash.
+- Kurslar, darslar, yozilishlar, progress, profil, testlar va natijalar.
+- Admin paneldan talaba taklif qilish va kurslarni biriktirish.
+- Barcha SQL migratsiyalar, testlar, rasmlar va Windows CMD fayllari.
+
+ZIPDA NIMA YO‘Q
+- .env.local ichidagi maxfiy kalitlar.
+- node_modules va .next vaqtinchalik papkalari.
+- Supabase bazasining eksporti yoki brauzerdagi eski localStorage yozuvlari.
+
+Supabase ma’lumotlari Windows papkasida emas, Supabase hisobingizda saqlanadi.
+Shu sabab boshqa kompyuterda ham aynan o‘sha Supabase loyiha URL va kalitlarini
+kiritsangiz, mavjud foydalanuvchi, kurs, dars va natijalar qayta ko‘rinadi.
+
+1. ZIPNI OCHING
+ZIP ustiga o‘ng tugma → Extract All / Barchasini chiqarish.
+Ichidagi gradexa papkasini Desktopga qo‘ying. ZIP ichidan ishga tushirmang.
+
+2. NODE.JS
+Node.js 22.13 yoki yangiroq kerak. Bank proksi rejimi uchun Node.js 22.21+
+yoki 24.5+ ishlating. Node.js o‘rnatilgach yangi CMD oching.
+
+3. TO‘LIQ O‘RNATISH
+Oddiy internetda: INSTALL-UZ.cmd
+Bank proksisida: INSTALL-GRADEXA-BANK.cmd
+
+Bank fayli 172.23.11.101:2002 proksini faqat o‘sha terminal jarayonida yoqadi.
+Windows yoki npm proksi sozlamasini doimiy o‘zgartirmaydi.
+
+Installer .env.localni birinchi marta yaratib Notepadda ochadi. Quyidagi
+to‘rtta qiymatni o‘zingizning mavjud Gradexa Supabase loyihangizdan kiriting:
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+SUPABASE_SECRET_KEY=
+
+SUPABASE_SECRET_KEY faqat serverda ishlaydi va admin taklif yuborishi uchun
+kerak. Unga NEXT_PUBLIC_ prefiksini qo‘shmang. Hech bir kalitni chatga yubormang.
+Installer mavjud .env.local faylini almashtirmaydi va qiymatlarni terminalga
+chiqarmaydi.
+
+Installer ketma-ket npm kutubxonalarini o‘rnatadi, Supabase aloqasini tekshiradi,
+production build, TypeScript va barcha avtomatik testlarni bajaradi. Oxirida:
+
+TOLIQ ORNATISH MUVAFFAQIYATLI TUGADI
+
+yozuvi chiqishi kerak.
+
+4. SUPABASE SQL
+Agar aynan shu Supabase loyihasida oldingi yangilanishlarni allaqachon bajargan
+bo‘lsangiz, boshqa kompyuterga o‘tishda SQLni qayta bajarish shart emas.
+
+Baza eski holatda bo‘lsa, quyidagi tartibda mavjud Supabase SQL Editor’da Run:
+1) GRADEXA-DATA-UPDATE.sql
+2) GRADEXA-INVITATIONS-UPDATE.sql
+
+Foundation mavjud bazada 202609100001_gradexa_foundation.sql faylini qayta
+bajarmang. Mutlaqo yangi Supabase loyihasi bo‘lsa supabase/README-UZ.mdni o‘qing.
+
+Talaba taklif emaili uchun GRADEXA-INVITATIONS-UZ.txtdagi bir martalik Auth URL,
+Invite user email template va Custom SMTP sozlamalarini bajaring. Tayyor HTML:
+GRADEXA-INVITE-EMAIL.html.
+
+5. ISHGA TUSHIRISH
+Oddiy internetda: START-GRADEXA.cmd
+Bank tarmog‘ida: START-GRADEXA-BANK.cmd
+
+Brauzer: http://localhost:3000/login
+Serverni to‘xtatish: ochiq terminalda Ctrl+C.
+
+6. TEKSHIRISH
+Owner/admin hisobida login qiling. Kurs va darsni oching. Test yarating va
+nashr qiling. Talaba hisobida kurs, dars, test va natijani tekshiring.
+Admin → Talabalar orqali yangi emailga taklif yuborib, havolani inkognito yoki
+boshqa brauzerda oching; parol belgilang va kurs ko‘rinishini tekshiring.
+
+Kod tekshiruvi uchun serverni to‘xtatib CHECK-UZ.cmdni oching.
+
+XATO BO‘LSA
+Terminaldagi birinchi xato matnini yuboring. .env.local yoki maxfiy kalitlarni
+yubormang. O‘rnatish vaqtida fayl topilmasa ZIP to‘liq chiqarilganini tekshiring.
